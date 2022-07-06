@@ -12,6 +12,7 @@ public class GetRestaurantRequest {
     private String y;
     private String bounds;
 
+
     @Builder
     public GetRestaurantRequest(String query, String x, String y, String bounds) {
         this.query = query;

@@ -32,10 +32,10 @@ class RestaurantsRepositoryTest {
         String category = "바(BAR)";
         Long id = 1790381706L;
         String name = "드레싱 베이비";
-        String distance = "810m";
+        Long distance = 810L;
         String businessHours = "평일 11:15~22:00 평일 break 15:00~17:00 | 주말 11:30~22:00 주말 주방재료준비 15:30~16:30";
         Double visitorReviewScore = 3.43;
-        String saveCount = "2000+";
+        Long saveCount = 2000L;
         Double bookingReviewScore = 4.23;
         String imageUrl = "https:\\u002F\\u002Fldb-phinf.pstatic.net\\u002F20210906_227\\u002F16308926152264AxV2_JPEG\\u002FjZKBQcY8beh0d_9fPVHGOpc3.jpg";
 

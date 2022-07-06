@@ -30,7 +30,7 @@ public class Restaurant {
     private String name;
 
     @Column(nullable = false)
-    private String distance;
+    private Long distance;
 
     @Column(nullable = false)
     private String businessHours;
@@ -40,13 +40,13 @@ public class Restaurant {
     private Double visitorReviewScore;
 
     @Column(nullable = false)
-    private String saveCount;
+    private Long saveCount;
 
     @Column(nullable = false)
     private Double bookingReviewScore;
 
     @Builder
-    public Restaurant(long id, String address, String category, String imageUrl, String name, String distance, String businessHours, Double visitorReviewScore, String saveCount, Double bookingReviewScore) {
+    public Restaurant(long id, String address, String category, String imageUrl, String name, Long distance, String businessHours, Double visitorReviewScore, Long saveCount, Double bookingReviewScore) {
         this.id = id;
         this.address = address;
         this.category = category;
