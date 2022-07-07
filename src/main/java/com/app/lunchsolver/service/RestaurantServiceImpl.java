@@ -22,7 +22,7 @@ public class RestaurantServiceImpl implements RestaurantService{
     public void getRestaurantData(String url){
         String _url = HOST +url;
         HttpHeaders httpHeaders = utility.getDefaultHeader();
-        // when
+
         HttpEntity request = new HttpEntity(httpHeaders);
         ResponseEntity response = restTemplate.exchange(
                 _url,
@@ -30,6 +30,20 @@ public class RestaurantServiceImpl implements RestaurantService{
                 request,
                 String.class);
 
+
+    }
+
+    @Override
+    public void getRestaurantDetail(String url) {
+        String _url = HOST +url;
+        HttpHeaders httpHeaders = utility.getDefaultHeader();
+
+        HttpEntity request = new HttpEntity(httpHeaders);
+        ResponseEntity response = restTemplate.exchange(
+                _url,
+                HttpMethod.GET,
+                request,
+                String.class);
 
     }
 }

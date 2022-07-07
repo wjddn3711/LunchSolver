@@ -4,6 +4,7 @@ import com.app.lunchsolver.dto.GetRestaurantRequest;
 import com.app.lunchsolver.dto.GetRestaurantResponse;
 import com.app.lunchsolver.entity.restaurant.Restaurant;
 import com.app.lunchsolver.entity.restaurant.RestaurantsRepository;
+import com.app.lunchsolver.enums.RestaurantType;
 import com.app.lunchsolver.util.BaseUtility;
 import com.app.lunchsolver.util.NaverUtility;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -162,7 +163,7 @@ class RestaurantServiceImplTest {
             Restaurant restaurant = Restaurant.builder()
                     .id(Long.parseLong(mapped_data.getId()))
                     .address(mapped_data.getAddress())
-                    .category(mapped_data.getCategory())
+                    .category(mapped_data.getCategory()==null?"없음": mapped_data.getCategory())
                     .imageUrl(mapped_data.getImageUrl()==null?"":URLDecoder.decode(mapped_data.getImageUrl(),"UTF-8"))
                     .name(mapped_data.getName())
                     .distance(utility.stringToLongDistance(mapped_data.getDistance()))
@@ -170,14 +171,75 @@ class RestaurantServiceImplTest {
                     .visitorReviewScore(mapped_data.getVisitorReviewScore()==null? 0.0 : Double.parseDouble(mapped_data.getVisitorReviewScore()))
                     .saveCount(utility.stringToLongSaveCnt(mapped_data.getSaveCount()))
                     .bookingReviewScore(mapped_data.getBookingReviewScore())
+                    .restaurantType(RestaurantType.ASIAN)
                     .build();
             entities.add(restaurant);
         }
-
         restaurantsRepository.saveAll(entities);
 
         System.out.println("저장 완료");
         // then  : save Entities
 
+    }
+    
+    @Test
+    @DisplayName("")
+    public void getRestaurantAndSaveByType () throws Exception {
+        // given
+        for (RestaurantType type : RestaurantType.values()) {
+            // 카테고리내의 모든 음식들을 크롤링
+            String url = "/graphql";
+            String _url = HOST_v2+url;
+            GetRestaurantRequest request = GetRestaurantRequest.builder()
+                    .x(x)
+                    .y(y)
+                    .bounds("126.9738873;37.5502692;126.9980272;37.5696434")
+                    .query("음식점")
+                    .type(type)
+                    .build();
+            String jsonOperation = naverUtility.getRestaurants(request);
+            HttpHeaders httpHeaders = utility.getDefaultHeader();
+
+            HttpEntity requestMessage = new HttpEntity(jsonOperation,httpHeaders);
+            ResponseEntity response = restTemplate.exchange(
+                    _url,
+                    HttpMethod.POST,
+                    requestMessage,
+                    String.class);
+            List<Restaurant> entities = new ArrayList<>();
+
+            JSONArray datas = new JSONArray(response.getBody().toString());
+            datas.getJSONObject(0);
+
+            JSONArray items = datas.getJSONObject(0).getJSONObject("data").getJSONObject("restaurants").getJSONArray("items");
+            int total = Integer.parseInt(datas.getJSONObject(0).getJSONObject("data").getJSONObject("restaurants").getString("total"));
+            int maxCnt = total<100? total:100;
+            for (int i = 0; i < maxCnt; i++) {
+                GetRestaurantResponse mapped_data = gson.fromJson(items.getString(i),GetRestaurantResponse.class);
+                //1. first map with entity : 엔티티와 매핑하기전 validation을 거친다
+                Restaurant restaurant = Restaurant.builder()
+                        .id(Long.parseLong(mapped_data.getId()))
+                        .address(mapped_data.getAddress())
+                        .category(mapped_data.getCategory()==null?"없음": mapped_data.getCategory())
+                        .imageUrl(mapped_data.getImageUrl()==null?"":URLDecoder.decode(mapped_data.getImageUrl(),"UTF-8"))
+                        .name(mapped_data.getName())
+                        .distance(utility.stringToLongDistance(mapped_data.getDistance()))
+                        .businessHours(mapped_data.getBusinessHours())
+                        .visitorReviewScore(mapped_data.getVisitorReviewScore()==null? 0.0 : Double.parseDouble(mapped_data.getVisitorReviewScore()))
+                        .saveCount(utility.stringToLongSaveCnt(mapped_data.getSaveCount()))
+                        .bookingReviewScore(mapped_data.getBookingReviewScore())
+                        .restaurantType(type)
+                        .build();
+                entities.add(restaurant);
+            }
+            restaurantsRepository.saveAll(entities);
+        }
+
+
+
+        // when
+
+        // then
+        
     }
 }

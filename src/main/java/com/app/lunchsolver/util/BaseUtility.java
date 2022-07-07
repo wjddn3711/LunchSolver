@@ -61,6 +61,7 @@ public class BaseUtility {
     }
 
     public Long stringToLongSaveCnt(String saveCount){
+        saveCount = saveCount.replace("~","");
         saveCount = saveCount.replace(",","");
         saveCount = saveCount.replace("+","");
         return Long.parseLong(saveCount);
