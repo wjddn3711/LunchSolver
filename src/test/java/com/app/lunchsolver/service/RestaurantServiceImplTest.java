@@ -10,13 +10,11 @@ import com.app.lunchsolver.util.NaverUtility;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -26,12 +24,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.*;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
 
 
-import javax.swing.text.html.HTML;
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -233,13 +230,88 @@ class RestaurantServiceImplTest {
                 entities.add(restaurant);
             }
             restaurantsRepository.saveAll(entities);
+
         }
+        List<Long> ids = restaurantsRepository.findAllreturnId();
+        for (Long id : ids) {
+            System.out.println(id);
+        }
+        // when
+        // then
+    }
+
+    @Test
+    @DisplayName("")
+    public void givenIdListSearchAndSaveRestaurantDetail () throws Exception {
+        // given
+
+        List<Long> ids = Arrays.asList(
+                11356993l,
+                11477706l,
+                11592593l,
+                11592607l,
+                11592643l,
+                11592650l,
+                11618393l,
+                11618456l,
+                11619941l,
+                11618586l,
+                11623970l,
+                11664585l,
+                11677524l,
+                11677544l,
+                11677741l,
+                11678715l,
+                11678758l,
+                11678838l,
+                11679306l,
+                11679353l,
+                11679393l,11679455l);
+        for (Long id : ids) {
+            String url = String.format("/restaurant/%d/menu/list",id);
+            String _url = HOST_v1+url;
 
 
+            HttpHeaders httpHeaders = utility.getDefaultHeader();
 
+            HttpEntity requestMessage = new HttpEntity(httpHeaders);
+            // when
+            ResponseEntity response = restTemplate.exchange(
+                    _url,
+                    HttpMethod.GET,
+                    requestMessage,
+                    String.class);
+
+            // 음식점 정보들 파싱
+            Document doc = Jsoup.parse((String) response.getBody());
+
+            Element scriptElement = doc.getElementsByTag("script").get(2);
+            String innerJson =  scriptElement.childNode(0).toString();
+            int start = innerJson.indexOf("window.__APOLLO_STATE__");
+            int end = innerJson.indexOf("window.__PLACE_STATE__");
+            // JSON으로 파싱
+            JSONObject target = new JSONObject(innerJson.substring(start,end).substring(25));
+
+            JSONArray jsonArray = target.names();
+            List<String> restaurantList = new ArrayList<>();
+            for (int i = 0; i < jsonArray.length(); i++) {
+                String possible = jsonArray.get(i).toString();
+                // 레스토랑 정보를 갖고 있는 곳은 RestaurantListSummary:XXXXXX 의 형태를 띄며 한번의 스크래핑에서 50개의 결과값이 나오게 된다
+                if(possible.contains("Menu") && Character.isDigit(possible.charAt(possible.length()-2))){
+                    restaurantList.add(possible);
+                }
+            }
+//
+//            List<GetRestaurantResponse> results = new ArrayList<GetRestaurantResponse>();
+//            for (String s : restaurantList) {
+//                // 해당 JObject와 Response 객체간의 매핑
+//                GetRestaurantResponse mapped_data = gson.fromJson(target.get(s).toString(),GetRestaurantResponse.class);
+//                results.add(mapped_data);
+//            }
+        }
         // when
 
         // then
-        
+
     }
 }

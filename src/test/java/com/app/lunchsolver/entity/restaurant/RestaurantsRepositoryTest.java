@@ -19,10 +19,10 @@ class RestaurantsRepositoryTest {
     @Autowired
     RestaurantsRepository restaurantsRepository;
 
-    @AfterEach
-    public void cleanUp(){
-        restaurantsRepository.deleteAll();
-    }
+//    @AfterEach
+//    public void cleanUp(){
+//        restaurantsRepository.deleteAll();
+//    }
 
     @Test
     @DisplayName("임의의 레스토랑 정보를 저장한후 불러온 매장 정보와 동일한지 확인")
