@@ -2,6 +2,7 @@ package com.app.lunchsolver.service;
 
 import com.app.lunchsolver.dto.GetRestaurantRequest;
 import com.app.lunchsolver.dto.GetRestaurantResponse;
+import com.app.lunchsolver.dto.RestaurantDetailResponse;
 import com.app.lunchsolver.entity.restaurant.Restaurant;
 import com.app.lunchsolver.entity.restaurant.RestaurantsRepository;
 import com.app.lunchsolver.enums.RestaurantType;
@@ -10,27 +11,42 @@ import com.app.lunchsolver.util.NaverUtility;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.*;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponents;
+import org.springframework.web.util.UriComponentsBuilder;
 
 
+import javax.swing.text.html.HTML;
+import java.lang.reflect.Type;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 
 
 @RunWith(SpringRunner.class)
@@ -126,63 +142,6 @@ class RestaurantServiceImplTest {
     @DisplayName("")
     public void getRestaurantData_v2 () throws Exception {
 
-        // given
-        String url = "/graphql";
-        String _url = HOST_v2+url;
-        GetRestaurantRequest request = GetRestaurantRequest.builder()
-                .x(x)
-                .y(y)
-                .bounds("126.9738873;37.5502692;126.9980272;37.5696434")
-                .query("음식점").
-                build();
-        String jsonOperation = naverUtility.getRestaurants(request);
-
-
-        HttpHeaders httpHeaders = utility.getDefaultHeader();
-
-        HttpEntity requestMessage = new HttpEntity(new JSONArray(jsonOperation).toString(),httpHeaders);
-
-        // when
-        ResponseEntity response = restTemplate.exchange(
-                _url,
-                HttpMethod.POST,
-                requestMessage,
-                String.class);
-        List<Restaurant> entities = new ArrayList<>();
-
-        JSONArray datas = new JSONArray(response.getBody().toString());
-        datas.getJSONObject(0);
-
-        JSONArray items = datas.getJSONObject(0).getJSONObject("data").getJSONObject("restaurants").getJSONArray("items");
-        for (int i = 0; i < 100; i++) {
-            GetRestaurantResponse mapped_data = gson.fromJson(items.getString(i),GetRestaurantResponse.class);
-        //1. first map with entity : 엔티티와 매핑하기전 validation을 거친다
-            Restaurant restaurant = Restaurant.builder()
-                    .id(Long.parseLong(mapped_data.getId()))
-                    .address(mapped_data.getAddress())
-                    .category(mapped_data.getCategory()==null?"없음": mapped_data.getCategory())
-                    .imageUrl(mapped_data.getImageUrl()==null?"":URLDecoder.decode(mapped_data.getImageUrl(),"UTF-8"))
-                    .name(mapped_data.getName())
-                    .distance(utility.stringToLongDistance(mapped_data.getDistance()))
-                    .businessHours(mapped_data.getBusinessHours())
-                    .visitorReviewScore(mapped_data.getVisitorReviewScore()==null? 0.0 : Double.parseDouble(mapped_data.getVisitorReviewScore()))
-                    .saveCount(utility.stringToLongSaveCnt(mapped_data.getSaveCount()))
-                    .bookingReviewScore(mapped_data.getBookingReviewScore())
-                    .restaurantType(RestaurantType.ASIAN)
-                    .build();
-            entities.add(restaurant);
-        }
-        restaurantsRepository.saveAll(entities);
-
-        System.out.println("저장 완료");
-        // then  : save Entities
-
-    }
-    
-    @Test
-    @DisplayName("")
-    public void getRestaurantAndSaveByType () throws Exception {
-        // given
         for (RestaurantType type : RestaurantType.values()) {
             // 카테고리내의 모든 음식들을 크롤링
             String url = "/graphql";
@@ -236,8 +195,6 @@ class RestaurantServiceImplTest {
         for (Long id : ids) {
             System.out.println(id);
         }
-        // when
-        // then
     }
 
     @Test
@@ -302,16 +259,50 @@ class RestaurantServiceImplTest {
                 }
             }
 //
-//            List<GetRestaurantResponse> results = new ArrayList<GetRestaurantResponse>();
-//            for (String s : restaurantList) {
-//                // 해당 JObject와 Response 객체간의 매핑
-//                GetRestaurantResponse mapped_data = gson.fromJson(target.get(s).toString(),GetRestaurantResponse.class);
-//                results.add(mapped_data);
-//            }
+            List<RestaurantDetailResponse> results = new ArrayList<RestaurantDetailResponse>();
+            for (String s : restaurantList) {
+                // 해당 JObject와 Response 객체간의 매핑
+                RestaurantDetailResponse mapped_data = gson.fromJson(target.get(s).toString(), RestaurantDetailResponse.class);
+                mapped_data.setImgUrl(String.valueOf(mapped_data.getImages().get("json")));
+                results.add(mapped_data);
+            }
         }
         // when
 
         // then
 
+    }
+
+    @Value("${kakaoAk.key}")
+    private String authorization_key;
+    private final Logger log = LoggerFactory.getLogger(this.getClass().getSimpleName());
+    @Test
+    public void givenRouteReturnXY() throws Exception{
+        //given
+        String route = "양덕로 60";
+//        route = URLEncoder.encode(route, "UTF-8"); // 한글이 깨질수있기 때문에 인코딩
+        String url = "https://dapi.kakao.com/v2/local/search/address.json";
+        UriComponents uri = UriComponentsBuilder.newInstance()
+                .fromHttpUrl(url)
+                .queryParam("query",route)
+                .build();
+
+        //when
+        HttpHeaders httpHeaders = utility.getDefaultHeader();
+        httpHeaders.add("Authorization", String.format("KakaoAK %s",authorization_key));
+        HttpEntity requestMessage = new HttpEntity(httpHeaders);
+        ResponseEntity response = restTemplate.exchange(
+                uri.toUriString(),
+                HttpMethod.GET,
+                requestMessage,
+                String.class);
+        //then
+        JSONObject datas = new JSONObject(response.getBody().toString());
+        JSONObject addressData = datas.getJSONArray("documents").getJSONObject(0).getJSONObject("address");
+        double x = Math.round(Double.parseDouble(addressData.getString("x")) *10000000)/10000000.0;
+        double y = Math.round(Double.parseDouble(addressData.getString("y")) *10000000)/10000000.0;
+        log.info("x는 "+x);
+        log.info("y는 "+y);
+        assertThat(response.getStatusCode(), equalTo(HttpStatus.OK));
     }
 }

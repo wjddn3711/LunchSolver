@@ -26,6 +26,7 @@ public enum RestaurantType {
     public static List<String> getLabels(){
         List<String> labels = new ArrayList<>();
         Arrays.stream(RestaurantType.values()).forEach(type -> labels.add(type.getLabel()));
+
         return labels;
     }
 }

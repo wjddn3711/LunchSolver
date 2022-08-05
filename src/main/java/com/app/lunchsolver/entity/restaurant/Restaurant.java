@@ -1,17 +1,15 @@
 package com.app.lunchsolver.entity.restaurant;
 
 import com.app.lunchsolver.enums.RestaurantType;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import javax.persistence.*;
 
-@NoArgsConstructor
+
 @Entity
 @Getter
 @ToString
+@NoArgsConstructor
 public class Restaurant {
 
     // pk
