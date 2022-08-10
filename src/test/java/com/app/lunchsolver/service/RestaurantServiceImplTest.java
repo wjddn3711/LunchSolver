@@ -273,36 +273,7 @@ class RestaurantServiceImplTest {
 
     }
 
-    @Value("${kakaoAk.key}")
-    private String authorization_key;
-    private final Logger log = LoggerFactory.getLogger(this.getClass().getSimpleName());
-    @Test
-    public void givenRouteReturnXY() throws Exception{
-        //given
-        String route = "양덕로 60";
-//        route = URLEncoder.encode(route, "UTF-8"); // 한글이 깨질수있기 때문에 인코딩
-        String url = "https://dapi.kakao.com/v2/local/search/address.json";
-        UriComponents uri = UriComponentsBuilder.newInstance()
-                .fromHttpUrl(url)
-                .queryParam("query",route)
-                .build();
 
-        //when
-        HttpHeaders httpHeaders = utility.getDefaultHeader();
-        httpHeaders.add("Authorization", String.format("KakaoAK %s",authorization_key));
-        HttpEntity requestMessage = new HttpEntity(httpHeaders);
-        ResponseEntity response = restTemplate.exchange(
-                uri.toUriString(),
-                HttpMethod.GET,
-                requestMessage,
-                String.class);
-        //then
-        JSONObject datas = new JSONObject(response.getBody().toString());
-        JSONObject addressData = datas.getJSONArray("documents").getJSONObject(0).getJSONObject("address");
-        double x = Math.round(Double.parseDouble(addressData.getString("x")) *10000000)/10000000.0;
-        double y = Math.round(Double.parseDouble(addressData.getString("y")) *10000000)/10000000.0;
-        log.info("x는 "+x);
-        log.info("y는 "+y);
-        assertThat(response.getStatusCode(), equalTo(HttpStatus.OK));
-    }
+
+
 }

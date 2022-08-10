@@ -4,5 +4,4 @@ public interface RestaurantService {
     void getRestaurantData(String url);
     void getRestaurantDetail(String url);
 
-    void getXY(String query);
 }

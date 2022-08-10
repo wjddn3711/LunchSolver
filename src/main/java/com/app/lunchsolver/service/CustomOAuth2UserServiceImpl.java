@@ -5,6 +5,7 @@ import com.app.lunchsolver.dto.SessionUser;
 import com.app.lunchsolver.entity.user.User;
 import com.app.lunchsolver.entity.user.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -18,6 +19,7 @@ import java.util.Collections;
 
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class CustomOAuth2UserServiceImpl implements CustomOAuth2UserService {
     private final UserRepository userRepository;
     private final HttpSession httpSession;
@@ -26,6 +28,7 @@ public class CustomOAuth2UserServiceImpl implements CustomOAuth2UserService {
     public OAuth2User loadUser(OAuth2UserRequest userRequest) {
         OAuth2UserService<OAuth2UserRequest,OAuth2User> delegate
                 = new DefaultOAuth2UserService();
+        log.info("userRequest: "+userRequest);
         OAuth2User oAuth2User = delegate.loadUser(userRequest);
 
         String registrationId = userRequest.

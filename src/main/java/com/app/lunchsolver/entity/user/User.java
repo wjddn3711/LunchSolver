@@ -13,7 +13,6 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Table(name="users")
 @Entity
-@ToString
 public class User extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,6 +43,17 @@ public class User extends BaseTimeEntity {
         this.name = name;
         this.picture = picture;
         return this;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                ", picture='" + picture + '\'' +
+                ", role=" + role +
+                '}';
     }
 
     public String getRoleKey(){
