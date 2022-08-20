@@ -16,7 +16,7 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration //시큐리티 활성화 -> 기본 스프링 필터 체인에 등록
 public class SecurityConfig{
     @Autowired
-    private final CustomOAuth2UserServiceImpl customOAuth2UserServiceImpl;
+    private final CustomOAuth2UserService customOAuth2UserService;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
@@ -26,7 +26,7 @@ public class SecurityConfig{
                 .and()
                 .authorizeRequests()
                 .antMatchers("/","/css/**","/images/**",
-                        "/js/**","h2-console/**").permitAll()
+                        "/js/**","h2-console/**","/user/api/**").permitAll()
                 .antMatchers("/api/v1/**").hasRole(Role.USER.name())
                 .anyRequest().authenticated()
                 .and()
@@ -35,7 +35,7 @@ public class SecurityConfig{
                 .and()
                 .oauth2Login()
                 .userInfoEndpoint()
-                .userService(customOAuth2UserServiceImpl);
+                .userService(customOAuth2UserService);
         return http.build();
     }
 }

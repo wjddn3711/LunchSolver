@@ -1,6 +1,9 @@
 package com.app.lunchsolver.service;
 
+import com.app.lunchsolver.dto.GetRestaurantResponse;
+import com.app.lunchsolver.dto.KaKaoMapResponse;
 import com.app.lunchsolver.util.BaseUtility;
+import com.google.gson.Gson;
 import org.json.JSONObject;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -69,7 +72,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    @DisplayName("")
+    @DisplayName("xy를받아주소값반환받는다")
     public void  xy를받아주소값반환() throws Exception {
         // given
         double x = 126.9863309;
@@ -93,9 +96,13 @@ class UserServiceImplTest {
                 requestMessage,
                 String.class);
         // then
-        JSONObject datas = new JSONObject(response.getBody().toString());
-        JSONObject addressData = datas.getJSONArray("documents").getJSONObject(0).getJSONObject("address_name");
+        // 해당 JObject와 Response 객체간의 매핑
+        Gson gson = new Gson();
+        KaKaoMapResponse mapped_data = gson.fromJson(response.getBody().toString(),KaKaoMapResponse.class);
+        String target = mapped_data.documents.get(0).address_name;
+        log.info("target : "+target);
         assertThat(response.getStatusCode(), equalTo(HttpStatus.OK));
     }
+
 
 }

@@ -25,8 +25,8 @@ public class IndexController {
         return "index";
     }
 
-    @GetMapping("/xy")
-    public String xy(){
-        return "xy";
-    }
+//    @GetMapping("/xy")
+//    public String xy(){
+//        return "xy";
+//    }
 }

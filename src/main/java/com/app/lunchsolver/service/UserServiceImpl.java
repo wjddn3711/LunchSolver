@@ -1,8 +1,9 @@
 package com.app.lunchsolver.service;
 
+import com.app.lunchsolver.dto.KaKaoMapResponse;
 import com.app.lunchsolver.util.BaseUtility;
+import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,15 +16,6 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLEncoder;
-
 @Service
 @Slf4j
 public class UserServiceImpl implements UserService{
@@ -33,6 +25,8 @@ public class UserServiceImpl implements UserService{
     private RestTemplate restTemplate;
     @Autowired
     private BaseUtility utility;
+
+    Gson gson = new Gson();
 
     @Override
     public void getXY(String query) {
@@ -60,7 +54,7 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public void getAddress(double x, double y) {
+    public String getAddress(double x, double y) {
         String url = "https://dapi.kakao.com/v2/local/geo/coord2regioncode.json";
 
         UriComponents uri = UriComponentsBuilder.newInstance()
@@ -80,8 +74,8 @@ public class UserServiceImpl implements UserService{
                 requestMessage,
                 String.class);
         // then
-        JSONObject datas = new JSONObject(response.getBody().toString());
-        JSONObject addressData = datas.getJSONArray("documents").getJSONObject(0).getJSONObject("address_name");
+        KaKaoMapResponse mapped_data = gson.fromJson(response.getBody().toString(),KaKaoMapResponse.class);
+        String target = mapped_data.documents.get(0).address_name;
+        return target;
     }
-
 }
