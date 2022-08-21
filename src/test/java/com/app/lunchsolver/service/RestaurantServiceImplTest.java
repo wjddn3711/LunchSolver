@@ -139,7 +139,7 @@ class RestaurantServiceImplTest {
     }
 
     @Test
-    @DisplayName("")
+    @DisplayName("카테고리별 100개 스크래핑하여 DB에 담기")
     public void getRestaurantData_v2 () throws Exception {
 
         for (RestaurantType type : RestaurantType.values()) {

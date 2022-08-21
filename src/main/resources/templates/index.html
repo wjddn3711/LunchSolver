@@ -97,6 +97,22 @@
         }).done(function (fragment) {
             console.log('done');
             $("#fullAddress").replaceWith(fragment);
+            getRestaurantData(longtitude, latitude);
+        });
+    }
+
+    function getRestaurantData(longtitude, latitude){
+        var GetRestaurantRequest={
+            x : longtitude,
+            y : latitude
+        };
+
+        $.ajax({
+            url: "/user/api/getRestaurantData",
+            data: GetRestaurantRequest,
+            type:"PUT",
+        }).done(function (fragment) {
+            console.log('input succeed');
         });
     }
 

@@ -4,9 +4,11 @@ import com.app.lunchsolver.enums.RestaurantType;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
+@ToString
 public class GetRestaurantRequest {
     private String query;
     private String x;
