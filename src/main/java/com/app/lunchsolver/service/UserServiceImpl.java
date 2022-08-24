@@ -78,4 +78,5 @@ public class UserServiceImpl implements UserService{
         String target = mapped_data.documents.get(0).address_name;
         return target;
     }
+
 }

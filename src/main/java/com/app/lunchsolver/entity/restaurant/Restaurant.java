@@ -48,18 +48,14 @@ public class Restaurant {
     @Column(nullable = false)
     private RestaurantType restaurantType;
 
+    @Column(nullable = false)
+    private Double x;
+
+    @Column(nullable = false)
+    private Double y;
+
     @Builder
-    public Restaurant(long id,
-                      String address,
-                      String category,
-                      String imageUrl,
-                      String name,
-                      Long distance,
-                      String businessHours,
-                      Double visitorReviewScore,
-                      Long saveCount,
-                      Double bookingReviewScore,
-                      RestaurantType restaurantType) {
+    public Restaurant(long id, String address, String category, String imageUrl, String name, Long distance, String businessHours, Double visitorReviewScore, Long saveCount, Double bookingReviewScore, RestaurantType restaurantType, Double x, Double y) {
         this.id = id;
         this.address = address;
         this.category = category;
@@ -71,5 +67,7 @@ public class Restaurant {
         this.saveCount = saveCount;
         this.bookingReviewScore = bookingReviewScore;
         this.restaurantType = restaurantType;
+        this.x = x;
+        this.y = y;
     }
 }

@@ -168,10 +168,10 @@ class RestaurantServiceImplTest {
             datas.getJSONObject(0);
 
             JSONArray items = datas.getJSONObject(0).getJSONObject("data").getJSONObject("restaurants").getJSONArray("items");
-            int total = Integer.parseInt(datas.getJSONObject(0).getJSONObject("data").getJSONObject("restaurants").getString("total"));
+            int total = Integer.parseInt(datas.getJSONObject(0).getJSONObject("data").getJSONObject("restaurants").get("total").toString());
             int maxCnt = total<100? total:100;
             for (int i = 0; i < maxCnt; i++) {
-                GetRestaurantResponse mapped_data = gson.fromJson(items.getString(i),GetRestaurantResponse.class);
+                GetRestaurantResponse mapped_data = gson.fromJson(items.get(i).toString(),GetRestaurantResponse.class);
                 //1. first map with entity : 엔티티와 매핑하기전 validation을 거친다
                 Restaurant restaurant = Restaurant.builder()
                         .id(Long.parseLong(mapped_data.getId()))
@@ -185,6 +185,8 @@ class RestaurantServiceImplTest {
                         .saveCount(utility.stringToLongSaveCnt(mapped_data.getSaveCount()))
                         .bookingReviewScore(mapped_data.getBookingReviewScore())
                         .restaurantType(type)
+                        .x(mapped_data.getStreetPanorama().getLon())
+                        .y(mapped_data.getStreetPanorama().getLat())
                         .build();
                 entities.add(restaurant);
             }
