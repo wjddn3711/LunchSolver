@@ -94,6 +94,8 @@ public class RestaurantServiceImpl implements RestaurantService{
                         .saveCount(utility.stringToLongSaveCnt(mapped_data.getSaveCount()))
                         .bookingReviewScore(mapped_data.getBookingReviewScore())
                         .restaurantType(type)
+                        .x(mapped_data.getX())
+                        .y(mapped_data.getY())
                         .build();
                 entities.add(restaurant);
             }
@@ -127,21 +129,7 @@ public class RestaurantServiceImpl implements RestaurantService{
         List<Restaurant> restaurantList = restaurantsRepository.findAll();
         for (Restaurant restaurant : restaurantList) {
             // repository 의 db값 -> response dto 로 변환 (거리 계산을 해야하기 때문에 엔티티 그대로 모델로 사용하지못함)
-            dtos.add(RestaurantDTO.builder()
-                            .address(restaurant.getAddress())
-                            .diffDistance(utility.distance(
-                                    restaurant.getX(),
-                                    restaurant.getY(),
-                                    request.getX(),
-                                    request.getY(),
-                                    "meter"))
-                            .businessHours(restaurant.getBusinessHours())
-                            .restaurantType(restaurant.getRestaurantType())
-                            .bookingReviewScore(restaurant.getBookingReviewScore())
-                            .name(restaurant.getName())
-                            .saveCount(restaurant.getSaveCount())
-                            .saveCount(restaurant.getSaveCount())
-                    .build());
+
         }
         return dtos;
     }

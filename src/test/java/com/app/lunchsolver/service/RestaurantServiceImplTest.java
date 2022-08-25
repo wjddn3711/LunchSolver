@@ -35,6 +35,10 @@ import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
 
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.PersistenceContext;
+import javax.persistence.StoredProcedureQuery;
 import javax.swing.text.html.HTML;
 import java.lang.reflect.Type;
 import java.net.URLDecoder;
@@ -176,6 +180,7 @@ class RestaurantServiceImplTest {
             for (int i = 0; i < maxCnt; i++) {
                 GetRestaurantResponse mapped_data = gson.fromJson(items.get(i).toString(),GetRestaurantResponse.class);
                 //1. first map with entity : 엔티티와 매핑하기전 validation을 거친다
+                System.out.println(mapped_data);
                 Restaurant restaurant = Restaurant.builder()
                         .id(Long.parseLong(mapped_data.getId()))
                         .address(mapped_data.getAddress())
@@ -275,6 +280,21 @@ class RestaurantServiceImplTest {
 
     }
 
+
+
+    @Test
+    public void 프로시저테스트() throws Exception{
+        //given
+        //when
+        List<RestaurantDTOInterface> r = restaurantsRepository.getRestaurantByLocation(126.9858499,37.5502692);
+        //then
+
+        for (RestaurantDTOInterface restaurantDTOInterface : r) {
+            log.info(restaurantDTOInterface.getName());
+            log.info(restaurantDTOInterface.getDiff_Distance()+"");
+        }
+    }
+
     @Test
     @DisplayName("x,y 좌표값을 받아와 위치기반 가까운 거리의 매장정보를 반환")
     public void getRestaurantDTOfromDB () throws Exception {
@@ -285,23 +305,23 @@ class RestaurantServiceImplTest {
         List<Restaurant> restaurantList = restaurantsRepository.findAll();
         for (Restaurant restaurant : restaurantList) {
             // repository 의 db값 -> response dto 로 변환 (거리 계산을 해야하기 때문에 엔티티 그대로 모델로 사용하지못함)
-            dtos.add(RestaurantDTO.builder()
-                    .address(restaurant.getAddress())
-                    .diffDistance(utility.distance(
-                            restaurant.getX(),
-                            restaurant.getY(),
-                            request.getX(),
-                            request.getY(),
-                            "meter"))
-                    .businessHours(restaurant.getBusinessHours())
-                    .restaurantType(restaurant.getRestaurantType())
-                    .bookingReviewScore(restaurant.getBookingReviewScore())
-                    .name(restaurant.getName())
-                    .saveCount(restaurant.getSaveCount())
-                    .saveCount(restaurant.getSaveCount())
-                            .x(restaurant.getX())
-                            .y(restaurant.getY())
-                    .build());
+//            dtos.add(RestaurantDTO.builder()
+//                    .address(restaurant.getAddress())
+//                    .diffDistance(utility.distance(
+//                            restaurant.getX(),
+//                            restaurant.getY(),
+//                            request.getX(),
+//                            request.getY(),
+//                            "meter"))
+//                    .businessHours(restaurant.getBusinessHours())
+//                    .restaurantType(restaurant.getRestaurantType())
+//                    .bookingReviewScore(restaurant.getBookingReviewScore())
+//                    .name(restaurant.getName())
+//                    .saveCount(restaurant.getSaveCount())
+//                    .saveCount(restaurant.getSaveCount())
+//                            .x(restaurant.getX())
+//                            .y(restaurant.getY())
+//                    .build());
 
         }
         // then

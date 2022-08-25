@@ -1,56 +1,39 @@
 package com.app.lunchsolver.dto;
 
 import com.app.lunchsolver.enums.RestaurantType;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
-@Getter
-@Setter
-@ToString
-public class RestaurantDTO {
+import javax.persistence.*;
 
-    private long id;
+@Data
+@AllArgsConstructor
+public class RestaurantDTO implements RestaurantDTOInterface {
 
-    private String address;
+    public long id;
 
-    private String category;
+    public String address;
 
-    private String imageUrl;
+    public String category;
 
-    private String name;
+    public String image_Url;
 
-    private Double diffDistance;
+    public String name;
 
-    private String businessHours;
+    public Double diff_Distance;
 
-    private Double visitorReviewScore;
+    public String business_Hours;
 
-    private Long saveCount;
+    public Double visitor_Review_Score;
 
-    private Double bookingReviewScore;
+    public Long save_Count;
 
-    private RestaurantType restaurantType;
+    public Double booking_Review_Score;
 
-    private Double x;
+    public RestaurantType restaurant_Type;
 
-    private Double y;
+    public Double x;
 
-    @Builder
-    public RestaurantDTO(long id, String address, String category, String imageUrl, String name, Double diffDistance, String businessHours, Double visitorReviewScore, Long saveCount, Double bookingReviewScore, RestaurantType restaurantType, Double x, Double y) {
-        this.id = id;
-        this.address = address;
-        this.category = category;
-        this.imageUrl = imageUrl;
-        this.name = name;
-        this.diffDistance = diffDistance;
-        this.businessHours = businessHours;
-        this.visitorReviewScore = visitorReviewScore;
-        this.saveCount = saveCount;
-        this.bookingReviewScore = bookingReviewScore;
-        this.restaurantType = restaurantType;
-        this.x = x;
-        this.y = y;
-    }
+    public Double y;
+
+
 }
