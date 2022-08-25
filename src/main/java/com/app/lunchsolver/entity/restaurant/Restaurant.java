@@ -28,10 +28,10 @@ public class Restaurant {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false)
-    private Long distance;
+//    @Column(nullable = false)
+//    private Long distance;
 
-    @Column(nullable = false, length = 1000)
+    @Column(nullable = false, length = 1500)
     private String businessHours;
 
     // 아래 셋은 종합하여  맛집 랭킹에 사용될 예정
@@ -55,13 +55,13 @@ public class Restaurant {
     private Double y;
 
     @Builder
-    public Restaurant(long id, String address, String category, String imageUrl, String name, Long distance, String businessHours, Double visitorReviewScore, Long saveCount, Double bookingReviewScore, RestaurantType restaurantType, Double x, Double y) {
+    public Restaurant(long id, String address, String category, String imageUrl, String name, String businessHours, Double visitorReviewScore, Long saveCount, Double bookingReviewScore, RestaurantType restaurantType, Double x, Double y) {
         this.id = id;
         this.address = address;
         this.category = category;
         this.imageUrl = imageUrl;
         this.name = name;
-        this.distance = distance;
+//        this.distance = distance;
         this.businessHours = businessHours;
         this.visitorReviewScore = visitorReviewScore;
         this.saveCount = saveCount;

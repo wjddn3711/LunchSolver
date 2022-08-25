@@ -7,5 +7,6 @@ import java.util.List;
 
 public interface RestaurantsRepository extends JpaRepository<Restaurant, Long> {
     @Query(value = "select r.id from Restaurant r", nativeQuery = true)
-    List<Long> findAllreturnId();
+    public List<Long> findAllreturnId();
+
 }

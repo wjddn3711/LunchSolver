@@ -1,8 +1,6 @@
 package com.app.lunchsolver.service;
 
-import com.app.lunchsolver.dto.GetRestaurantRequest;
-import com.app.lunchsolver.dto.GetRestaurantResponse;
-import com.app.lunchsolver.dto.RestaurantDetailResponse;
+import com.app.lunchsolver.dto.*;
 import com.app.lunchsolver.entity.restaurant.Restaurant;
 import com.app.lunchsolver.entity.restaurant.RestaurantsRepository;
 import com.app.lunchsolver.enums.RestaurantType;
@@ -19,6 +17,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -70,6 +69,9 @@ class RestaurantServiceImplTest {
     private final String y =  "37.560042";
     private final String bounds = "126.9738873;37.5502692;126.9980272;37.5696434";
 
+
+
+    private final Logger log = LoggerFactory.getLogger(this.getClass().getSimpleName());
     Gson gson = new Gson();
 
     @Autowired
@@ -140,6 +142,7 @@ class RestaurantServiceImplTest {
 
     @Test
     @DisplayName("카테고리별 100개 스크래핑하여 DB에 담기")
+    @BeforeEach
     public void getRestaurantData_v2 () throws Exception {
 
         for (RestaurantType type : RestaurantType.values()) {
@@ -179,24 +182,21 @@ class RestaurantServiceImplTest {
                         .category(mapped_data.getCategory()==null?"없음": mapped_data.getCategory())
                         .imageUrl(mapped_data.getImageUrl()==null?"":URLDecoder.decode(mapped_data.getImageUrl(),"UTF-8"))
                         .name(mapped_data.getName())
-                        .distance(utility.stringToLongDistance(mapped_data.getDistance()))
+//                        .distance(utility.stringToLongDistance(mapped_data.getDistance()))
                         .businessHours(mapped_data.getBusinessHours())
                         .visitorReviewScore(mapped_data.getVisitorReviewScore()==null? 0.0 : Double.parseDouble(mapped_data.getVisitorReviewScore()))
                         .saveCount(utility.stringToLongSaveCnt(mapped_data.getSaveCount()))
                         .bookingReviewScore(mapped_data.getBookingReviewScore())
                         .restaurantType(type)
-                        .x(mapped_data.getStreetPanorama().getLon())
-                        .y(mapped_data.getStreetPanorama().getLat())
+                        .x(mapped_data.getX())
+                        .y(mapped_data.getY())
                         .build();
                 entities.add(restaurant);
             }
             restaurantsRepository.saveAll(entities);
 
         }
-        List<Long> ids = restaurantsRepository.findAllreturnId();
-        for (Long id : ids) {
-            System.out.println(id);
-        }
+
     }
 
     @Test
@@ -275,7 +275,39 @@ class RestaurantServiceImplTest {
 
     }
 
+    @Test
+    @DisplayName("x,y 좌표값을 받아와 위치기반 가까운 거리의 매장정보를 반환")
+    public void getRestaurantDTOfromDB () throws Exception {
+        // given
+        AddressRequest request = new AddressRequest(126.9738873,37.5502692);
+        // when
+        List<RestaurantDTO> dtos = new ArrayList<RestaurantDTO>(); // 초기화진행
+        List<Restaurant> restaurantList = restaurantsRepository.findAll();
+        for (Restaurant restaurant : restaurantList) {
+            // repository 의 db값 -> response dto 로 변환 (거리 계산을 해야하기 때문에 엔티티 그대로 모델로 사용하지못함)
+            dtos.add(RestaurantDTO.builder()
+                    .address(restaurant.getAddress())
+                    .diffDistance(utility.distance(
+                            restaurant.getX(),
+                            restaurant.getY(),
+                            request.getX(),
+                            request.getY(),
+                            "meter"))
+                    .businessHours(restaurant.getBusinessHours())
+                    .restaurantType(restaurant.getRestaurantType())
+                    .bookingReviewScore(restaurant.getBookingReviewScore())
+                    .name(restaurant.getName())
+                    .saveCount(restaurant.getSaveCount())
+                    .saveCount(restaurant.getSaveCount())
+                            .x(restaurant.getX())
+                            .y(restaurant.getY())
+                    .build());
 
+        }
+        // then
 
-
+        for (RestaurantDTO dto : dtos) {
+            log.info(dto.toString());
+        }
+    }
 }

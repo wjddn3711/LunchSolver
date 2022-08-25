@@ -39,19 +39,19 @@ class RestaurantsRepositoryTest {
         Double bookingReviewScore = 4.23;
         String imageUrl = "https:\\u002F\\u002Fldb-phinf.pstatic.net\\u002F20210906_227\\u002F16308926152264AxV2_JPEG\\u002FjZKBQcY8beh0d_9fPVHGOpc3.jpg";
 
-        restaurantsRepository.save(Restaurant.builder()
-                        .address(address)
-                        .category(category)
-                        .id(id)
-                        .name(name)
-                        .distance(distance)
-                        .businessHours(businessHours)
-                        .visitorReviewScore(visitorReviewScore)
-                        .saveCount(saveCount)
-                        .bookingReviewScore(bookingReviewScore)
-                        .imageUrl(imageUrl)
-                        .build()
-                );
+//        restaurantsRepository.save(Restaurant.builder()
+//                        .address(address)
+//                        .category(category)
+//                        .id(id)
+//                        .name(name)
+//                        .distance(distance)
+//                        .businessHours(businessHours)
+//                        .visitorReviewScore(visitorReviewScore)
+//                        .saveCount(saveCount)
+//                        .bookingReviewScore(bookingReviewScore)
+//                        .imageUrl(imageUrl)
+//                        .build()
+//                );
 ;
         // when
         List<Restaurant> restaurantList = restaurantsRepository.findAll();

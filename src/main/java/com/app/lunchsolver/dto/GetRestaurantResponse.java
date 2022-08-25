@@ -19,5 +19,6 @@ public class GetRestaurantResponse {
     private String visitorReviewScore;
     private String saveCount;
     private Double bookingReviewScore;
-    private StreetPanorama streetPanorama;
+    private Double x;
+    private Double y;
 }

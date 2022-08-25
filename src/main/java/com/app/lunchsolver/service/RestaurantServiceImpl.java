@@ -1,7 +1,9 @@
 package com.app.lunchsolver.service;
 
+import com.app.lunchsolver.dto.AddressRequest;
 import com.app.lunchsolver.dto.GetRestaurantRequest;
 import com.app.lunchsolver.dto.GetRestaurantResponse;
+import com.app.lunchsolver.dto.RestaurantDTO;
 import com.app.lunchsolver.entity.restaurant.Restaurant;
 import com.app.lunchsolver.entity.restaurant.RestaurantsRepository;
 import com.app.lunchsolver.enums.RestaurantType;
@@ -11,9 +13,7 @@ import com.app.lunchsolver.util.NaverUtility;
 import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -22,9 +22,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import javax.transaction.Transactional;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.*;
 import java.util.ArrayList;
@@ -91,7 +88,7 @@ public class RestaurantServiceImpl implements RestaurantService{
                         .category(mapped_data.getCategory() == null ? "없음" : mapped_data.getCategory())
                         .imageUrl(mapped_data.getImageUrl() == null ? "" : URLDecoder.decode(mapped_data.getImageUrl(), "UTF-8"))
                         .name(mapped_data.getName())
-                        .distance(utility.stringToLongDistance(mapped_data.getDistance()))
+//                        .distance(utility.stringToLongDistance(mapped_data.getDistance()))
                         .businessHours(mapped_data.getBusinessHours())
                         .visitorReviewScore(mapped_data.getVisitorReviewScore() == null ? 0.0 : Double.parseDouble(mapped_data.getVisitorReviewScore()))
                         .saveCount(utility.stringToLongSaveCnt(mapped_data.getSaveCount()))
@@ -117,6 +114,35 @@ public class RestaurantServiceImpl implements RestaurantService{
                 HttpMethod.GET,
                 request,
                 String.class);
+    }
 
+    @Override
+    public void getRestaurantDTO() {
+
+    }
+
+    @Override
+    public List<RestaurantDTO> getRestaurantDTO(AddressRequest request) {
+        List<RestaurantDTO> dtos = new ArrayList<RestaurantDTO>(); // 초기화진행
+        List<Restaurant> restaurantList = restaurantsRepository.findAll();
+        for (Restaurant restaurant : restaurantList) {
+            // repository 의 db값 -> response dto 로 변환 (거리 계산을 해야하기 때문에 엔티티 그대로 모델로 사용하지못함)
+            dtos.add(RestaurantDTO.builder()
+                            .address(restaurant.getAddress())
+                            .diffDistance(utility.distance(
+                                    restaurant.getX(),
+                                    restaurant.getY(),
+                                    request.getX(),
+                                    request.getY(),
+                                    "meter"))
+                            .businessHours(restaurant.getBusinessHours())
+                            .restaurantType(restaurant.getRestaurantType())
+                            .bookingReviewScore(restaurant.getBookingReviewScore())
+                            .name(restaurant.getName())
+                            .saveCount(restaurant.getSaveCount())
+                            .saveCount(restaurant.getSaveCount())
+                    .build());
+        }
+        return dtos;
     }
 }
