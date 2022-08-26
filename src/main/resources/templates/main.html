@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=f4c09d486f1f49e48a1490b5808b62b2"></script>
+    <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+    <title>Main</title>
+</head>
+<body>
+<form action="/main" method="post">
+    <label for="x">위도</label>
+    <input type="text" name="x" id="x" />
+    <br>
+    <label for="y">경도</label>
+    <input type="text" name="y" id="y" />
+    <button type="submit">등록</button>
+</form>
+<div id="map" style="width:500px;height:400px;"></div>
+<br>
+<h2>나의 위치 정보</h2>
+<div id="myLocationInfo">좌표값 오류 X</div>
+ <div>현재 주소 :<input type="text" id="fullAddress" name="fullAddress" ></div>
+<div id="clickLatlng"></div>
+</body>
+<script>
+    window.onload = function(){
+        document.getElementById("fullAddress").addEventListener("click", function(){ //주소입력칸을 클릭하면
+            //카카오 지도 발생
+            new daum.Postcode({
+                oncomplete: function(data) { //선택시 입력값 세팅
+                    document.getElementById("fullAddress").value = data.address; // 주소 넣기
+                    document.querySelector("input[name=address_detail]").focus(); //상세입력 포커싱
+                }
+            }).open();
+        });
+    }
+
+    /* 비동기적으로 현재 위치를 알아내어 지정된 요소에 출력한다. */
+    function whereami(elt) {
+        // 이 객체를 getCurrentPosition() 메서드의 세번째 인자로 전달한다.
+        var options = {
+            // 가능한 경우, 높은 정확도의 위치(예를 들어, GPS 등) 를 읽어오려면 true로 설정
+            // 그러나 이 기능은 배터리 지속 시간에 영향을 미친다.
+            enableHighAccuracy: false, // 대략적인 값이라도 상관 없음: 기본값
+
+            // 위치 정보가 충분히 캐시되었으면, 이 프로퍼티를 설정하자,
+            // 위치 정보를 강제로 재확인하기 위해 사용하기도 하는 이 값의 기본 값은 0이다.
+            maximumAge: 30000,     // 5분이 지나기 전까지는 수정되지 않아도 됨
+
+            // 위치 정보를 받기 위해 얼마나 오랫동안 대기할 것인가?
+            // 기본값은 Infinity이므로 getCurrentPosition()은 무한정 대기한다.
+            timeout: 15000    // 15초 이상 기다리지 않는다.
+        }
+
+        if (navigator.geolocation) // geolocation 을 지원한다면 위치를 요청한다.
+            navigator.geolocation.getCurrentPosition(success, error, options);
+        else
+            elt.innerHTML = "이 브라우저에서는 Geolocation이 지원되지 않습니다.";
+
+
+        // geolocation 요청이 실패하면 이 함수를 호출한다.
+        function error(e) {
+            // 오류 객체에는 수치 코드와 텍스트 메시지가 존재한다.
+            // 코드 값은 다음과 같다.
+            // 1: 사용자가 위치 정보를 공유 권한을 제공하지 않음.
+            // 2: 브라우저가 위치를 가져올 수 없음.
+            // 3: 타임아웃이 발생됨.
+            elt.innerHTML = "Geolocation 오류 " + e.code + ": " + e.message;
+        }
+
+
+        // geolocation 요청이 성공하면 이 함수가 호출된다.
+        function success(pos) {
+
+            console.log(pos); // [디버깅] Position 객체 내용 확인
+
+            // 항상 가져올 수 있는 필드들이다. timestamp는 coords 객체 내부에 있지 않고,
+            // 외부에서 가져오는 필드라는 점에 주의하다.
+            x.value = pos.coords.longitude;
+            y.value = pos.coords.latitude;
+
+            var container = document.getElementById('map'); //지도를 담을 영역의 DOM 레퍼런스
+            var options = { //지도를 생성할 때 필요한 기본 옵션
+                center: new kakao.maps.LatLng(pos.coords.latitude, pos.coords.longitude), //지도의 중심좌표.
+                level: 3 //지도의 레벨(확대, 축소 정도)
+            };
+
+            var map = new kakao.maps.Map(container, options); //지도 생성 및 객체 리턴
+
+// 지도를 클릭한 위치에 표출할 마커입니다
+            var marker = new kakao.maps.Marker({
+                // 지도 중심좌표에 마커를 생성합니다
+                position: map.getCenter()
+            });
+// 지도에 마커를 표시합니다
+            marker.setMap(map);
+            getFullAddress(pos.coords.longitude, pos.coords.latitude);
+// 지도에 클릭 이벤트를 등록합니다
+// 지도를 클릭하면 마지막 파라미터로 넘어온 함수를 호출합니다
+            kakao.maps.event.addListener(map, 'click', function(mouseEvent) {
+
+                // 클릭한 위도, 경도 정보를 가져옵니다
+                var latlng = mouseEvent.latLng;
+
+                // 마커 위치를 클릭한 위치로 옮깁니다
+                marker.setPosition(latlng);
+                x.value = latlng.getLng();
+                y.value = latlng.getLat();
+                var message = '클릭한 위치의 위도는 ' + latlng.getLat() + ' 이고, ';
+                message += '경도는 ' + latlng.getLng() + ' 입니다';
+
+                var resultDiv = document.getElementById('clickLatlng');
+                resultDiv.innerHTML = message;
+                getFullAddress(latlng.getLng(), latlng.getLat());
+            });
+        }
+    }
+
+    function getFullAddress(longtitude, latitude) {
+        var AddressRequest={
+            x : longtitude,
+            y : latitude
+        };
+
+        $.ajax({
+            url: "/user/api/getFullAddress",
+            data: AddressRequest,
+            type:"POST",
+        }).done(function (fragment) {
+            console.log(fragment);
+            $("#fullAddress").val(fragment);
+        });
+    }
+
+    // 나의 위치정보를 출력할 객체 구하기
+    var elt = document.getElementById("myLocationInfo");
+    var x = document.getElementById("x");
+    var y = document.getElementById("y");
+
+    // 나의 위치정보 출력하기
+    whereami(elt);
+</script>
+</html>

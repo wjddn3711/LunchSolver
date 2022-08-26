@@ -1,6 +1,9 @@
 package com.app.lunchsolver.controller;
 
+import com.app.lunchsolver.config.auth.LoginUser;
+import com.app.lunchsolver.dto.SessionUser;
 import com.app.lunchsolver.entity.restaurant.Restaurant;
+import com.app.lunchsolver.entity.restaurant.RestaurantsRepository;
 import com.app.lunchsolver.service.RestaurantService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -9,14 +12,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@RequestMapping("/restaurant")
 public class RestaurantController {
 
     @Autowired
     private RestaurantService restaurantService;
 
-    @GetMapping("/main")
-    public String getMain(Model model){
-        return "";
-    }
+    @Autowired
+    private RestaurantsRepository restaurantsRepository;
+
+
 }

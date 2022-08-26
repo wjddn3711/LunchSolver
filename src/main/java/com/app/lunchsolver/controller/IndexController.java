@@ -16,17 +16,23 @@ import javax.servlet.http.HttpSession;
 public class IndexController {
     private final HttpSession httpSession;
 
-    @GetMapping
+    @GetMapping("/")
     public String index(Model model, @LoginUser SessionUser user){
-        log.info("user : "+user);
         if(user!=null){
             model.addAttribute("userName", user.getName());
+            return "main";
         }
         return "index";
     }
 
-    @GetMapping("/xy")
-    public String xy(){
-        return "xy";
+    @GetMapping("/main")
+    public String main(){
+        return "main";
     }
+
+//    @GetMapping("/success")
+//    public String xy(){
+//        // 만약 db 에 x,y 가 있다면
+//        return "xy";
+//    }
 }

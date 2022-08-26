@@ -280,15 +280,13 @@ class RestaurantServiceImplTest {
 
     }
 
-
-
     @Test
-    public void 프로시저테스트() throws Exception{
+    public void 좌표값을기준으로1km반경내음식점찾기() throws Exception{
         //given
+        AddressRequest request = new AddressRequest(126.9738873,37.5502692);
         //when
-        List<RestaurantDTOInterface> r = restaurantsRepository.getRestaurantByLocation(126.9858499,37.5502692);
+        List<RestaurantDTOInterface> r = restaurantsRepository.getRestaurantByLocation(request.getX(), request.getY());
         //then
-
         for (RestaurantDTOInterface restaurantDTOInterface : r) {
             log.info(restaurantDTOInterface.getName());
             log.info(restaurantDTOInterface.getDiff_Distance()+"");

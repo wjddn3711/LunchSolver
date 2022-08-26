@@ -42,7 +42,8 @@ public class CustomOAuth2UserServiceImpl implements CustomOAuth2UserService {
                 of(registrationId,userNameAttributeName,
                         oAuth2User.getAttributes());
 
-        User user = saveOrUpdate(attributes);
+        User user = saveOrUpdate(attributes); // 만약 존재하는 id, 즉 email이라면 update, else save
+
         httpSession.setAttribute("user", new SessionUser(user));
 
         return new DefaultOAuth2User(

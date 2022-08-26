@@ -26,7 +26,7 @@ public class SecurityConfig{
                 .and()
                 .authorizeRequests()
                 .antMatchers("/","/css/**","/images/**",
-                        "/js/**","h2-console/**","/user/api/**").permitAll()
+                        "/js/**","h2-console/**","/user/api/**").permitAll() // 해당 url을 가진 경우 모두 허용
                 .antMatchers("/api/v1/**").hasRole(Role.USER.name())
                 .anyRequest().authenticated()
                 .and()
@@ -34,6 +34,8 @@ public class SecurityConfig{
                 .logoutSuccessUrl("/")
                 .and()
                 .oauth2Login()
+                .defaultSuccessUrl("/main")  // 로그인 성공시 url
+//                .failureUrl("/") // 로그인 실패시 url
                 .userInfoEndpoint()
                 .userService(customOAuth2UserService);
         return http.build();

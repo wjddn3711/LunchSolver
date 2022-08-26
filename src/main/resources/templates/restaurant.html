@@ -38,8 +38,9 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-
+                    <tr th:each="userList : ${list}">
+                        <td th:text="${userList.name}"></td>
+                        <td th:text="${userList.age}"></td>
                     </tr>
                 </tbody>
             </table>

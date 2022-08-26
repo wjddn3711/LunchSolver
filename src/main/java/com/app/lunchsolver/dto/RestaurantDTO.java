@@ -35,5 +35,4 @@ public class RestaurantDTO implements RestaurantDTOInterface {
 
     public Double y;
 
-
 }
