@@ -1,5 +1,6 @@
 package com.app.lunchsolver.service;
 
+import com.app.lunchsolver.dto.AddressDTO;
 import com.app.lunchsolver.dto.KaKaoMapResponse;
 import com.app.lunchsolver.util.BaseUtility;
 import com.google.gson.Gson;
@@ -18,7 +19,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 @Service
 @Slf4j
-public class UserServiceImpl implements UserService{
+public class UserServiceImpl implements UserService {
     @Value("${kakaoAk.key}")
     private String authorization_key;
     @Autowired
@@ -29,15 +30,15 @@ public class UserServiceImpl implements UserService{
     Gson gson = new Gson();
 
     @Override
-    public void getXY(String query) {
+    public AddressDTO getXY(String query) {
         String url = "https://dapi.kakao.com/v2/local/search/address.json";
         UriComponents uri = UriComponentsBuilder.newInstance()
                 .fromHttpUrl(url)
-                .queryParam("query",query)
+                .queryParam("query", query)
                 .build();
 
         HttpHeaders httpHeaders = utility.getDefaultHeader();
-        httpHeaders.add("Authorization", String.format("KakaoAK %s",authorization_key));
+        httpHeaders.add("Authorization", String.format("KakaoAK %s", authorization_key));
         HttpEntity requestMessage = new HttpEntity(httpHeaders);
         ResponseEntity response = restTemplate.exchange(
                 uri.toUriString(),
@@ -47,10 +48,12 @@ public class UserServiceImpl implements UserService{
 
         JSONObject datas = new JSONObject(response.getBody().toString());
         JSONObject addressData = datas.getJSONArray("documents").getJSONObject(0).getJSONObject("address");
-        double x = Math.round(Double.parseDouble(addressData.getString("x")) *10000000)/10000000.0;
-        double y = Math.round(Double.parseDouble(addressData.getString("y")) *10000000)/10000000.0;
-        log.info("x는 "+x);
-        log.info("y는 "+y);
+        double x = Math.round(Double.parseDouble(addressData.getString("x")) * 10000000) / 10000000.0;
+        double y = Math.round(Double.parseDouble(addressData.getString("y")) * 10000000) / 10000000.0;
+        return AddressDTO.builder()
+                .x(x)
+                .y(y)
+                .build();
     }
 
     @Override
@@ -59,12 +62,12 @@ public class UserServiceImpl implements UserService{
 
         UriComponents uri = UriComponentsBuilder.newInstance()
                 .fromHttpUrl(url)
-                .queryParam("x",x)
-                .queryParam("y",y)
+                .queryParam("x", x)
+                .queryParam("y", y)
                 .build();
 
         HttpHeaders httpHeaders = utility.getDefaultHeader();
-        httpHeaders.add("Authorization", String.format("KakaoAK %s",authorization_key));
+        httpHeaders.add("Authorization", String.format("KakaoAK %s", authorization_key));
 
         // when
         HttpEntity requestMessage = new HttpEntity(httpHeaders);
@@ -74,7 +77,7 @@ public class UserServiceImpl implements UserService{
                 requestMessage,
                 String.class);
         // then
-        KaKaoMapResponse mapped_data = gson.fromJson(response.getBody().toString(),KaKaoMapResponse.class);
+        KaKaoMapResponse mapped_data = gson.fromJson(response.getBody().toString(), KaKaoMapResponse.class);
         String target = mapped_data.documents.get(0).address_name;
         return target;
     }

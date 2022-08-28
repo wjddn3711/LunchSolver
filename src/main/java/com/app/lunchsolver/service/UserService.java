@@ -1,6 +1,8 @@
 package com.app.lunchsolver.service;
 
+import com.app.lunchsolver.dto.AddressDTO;
+
 public interface UserService {
-    void getXY(String query);
+    AddressDTO getXY(String query);
     String getAddress(double x, double y);
 }

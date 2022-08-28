@@ -3,33 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=f4c09d486f1f49e48a1490b5808b62b2"></script>
+    <script type="text/javascript"
+            src="//dapi.kakao.com/v2/maps/sdk.js?appkey=f4c09d486f1f49e48a1490b5808b62b2"></script>
     <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
     <title>Main</title>
 </head>
 <body>
-<form action="/main" method="post">
-    <label for="x">위도</label>
-    <input type="text" name="x" id="x" />
+<form th:action="@{/main}"  method="post">
+    위도
+    <input type="text"  id="x" name="x"/>
     <br>
-    <label for="y">경도</label>
-    <input type="text" name="y" id="y" />
+    경도
+    <input type="text"  id="y" name="y"/>
     <button type="submit">등록</button>
 </form>
 <div id="map" style="width:500px;height:400px;"></div>
 <br>
 <h2>나의 위치 정보</h2>
 <div id="myLocationInfo">좌표값 오류 X</div>
- <div>현재 주소 :<input type="text" id="fullAddress" name="fullAddress" ></div>
+<div>현재 주소 :<span id="fullAddress" ></span></div>
 <div id="clickLatlng"></div>
+
+<div>
+    주소 입력하기 : <input type="text" id="findAddress">
+    <button type="submit" onclick="toXY()">주소 반영하기</button>
+</div>
+
 </body>
 <script>
-    window.onload = function(){
-        document.getElementById("fullAddress").addEventListener("click", function(){ //주소입력칸을 클릭하면
+    function toXY(){
+        var address = $("#findAddress").val();
+        console.log("current address : "+address);
+        if(address.length > 0){
+            // 만약 주소값이 입력되었다면 ajax호출
+
+            $.ajax({
+                url: "/user/api/getLonLat",
+                data: {fullAddress : address},
+                type: "POST",
+            }).done(function (fragment) {
+
+                console.log('x: '+fragment.x);
+                console.log('y: '+fragment.y);
+
+                // x,y, 현재 위치 바꿔주기
+                x.value = fragment.x;
+                y.value = fragment.y;
+                $("#fullAddress").text(address);
+
+                createKaKaoMap(fragment.y, fragment.x);
+            });
+        }
+    }
+
+    window.onload = function () {
+        document.getElementById("findAddress").addEventListener("click", function () { //주소입력칸을 클릭하면
             //카카오 지도 발생
             new daum.Postcode({
-                oncomplete: function(data) { //선택시 입력값 세팅
-                    document.getElementById("fullAddress").value = data.address; // 주소 넣기
+                oncomplete: function (data) { //선택시 입력값 세팅
+                    document.getElementById("findAddress").value = data.address; // 주소 넣기
                     document.querySelector("input[name=address_detail]").focus(); //상세입력 포커싱
                 }
             }).open();
@@ -80,31 +112,33 @@
             x.value = pos.coords.longitude;
             y.value = pos.coords.latitude;
 
-            var container = document.getElementById('map'); //지도를 담을 영역의 DOM 레퍼런스
-            var options = { //지도를 생성할 때 필요한 기본 옵션
-                center: new kakao.maps.LatLng(pos.coords.latitude, pos.coords.longitude), //지도의 중심좌표.
-                level: 3 //지도의 레벨(확대, 축소 정도)
-            };
-
-            var map = new kakao.maps.Map(container, options); //지도 생성 및 객체 리턴
-
-// 지도를 클릭한 위치에 표출할 마커입니다
-            var marker = new kakao.maps.Marker({
-                // 지도 중심좌표에 마커를 생성합니다
-                position: map.getCenter()
-            });
-// 지도에 마커를 표시합니다
-            marker.setMap(map);
+            createKaKaoMap(pos.coords.latitude,pos.coords.longitude);
+            // var container = document.getElementById('map'); //지도를 담을 영역의 DOM 레퍼런스
+            // var options = { //지도를 생성할 때 필요한 기본 옵션
+            //     center: new kakao.maps.LatLng(pos.coords.latitude, pos.coords.longitude), //지도의 중심좌표.
+            //     level: 3 //지도의 레벨(확대, 축소 정도)
+            // };
+            //
+            // var map = new kakao.maps.Map(container, options); //지도 생성 및 객체 리턴
+            //
+            // // 지도를 클릭한 위치에 표출할 마커입니다
+            // var marker = new kakao.maps.Marker({
+            //     // 지도 중심좌표에 마커를 생성합니다
+            //     position: map.getCenter()
+            // });
+            // // 지도에 마커를 표시합니다
+            // marker.setMap(map);
             getFullAddress(pos.coords.longitude, pos.coords.latitude);
-// 지도에 클릭 이벤트를 등록합니다
-// 지도를 클릭하면 마지막 파라미터로 넘어온 함수를 호출합니다
-            kakao.maps.event.addListener(map, 'click', function(mouseEvent) {
+
+            kakao.maps.event.addListener(map, 'click', function (mouseEvent) {
 
                 // 클릭한 위도, 경도 정보를 가져옵니다
                 var latlng = mouseEvent.latLng;
 
                 // 마커 위치를 클릭한 위치로 옮깁니다
                 marker.setPosition(latlng);
+
+                // 마커 이동후 클릭한 위치에 맞게 위도, 경도 설정
                 x.value = latlng.getLng();
                 y.value = latlng.getLat();
                 var message = '클릭한 위치의 위도는 ' + latlng.getLat() + ' 이고, ';
@@ -117,19 +151,43 @@
         }
     }
 
+    function createKaKaoMap(lat, lon){
+        var container = document.getElementById('map'); //지도를 담을 영역의 DOM 레퍼런스
+        var options = { //지도를 생성할 때 필요한 기본 옵션
+            center: new kakao.maps.LatLng(lat, lon), //지도의 중심좌표.
+            level: 3 //지도의 레벨(확대, 축소 정도)
+        };
+
+        var map = new kakao.maps.Map(container, options); //지도 생성 및 객체 리턴
+
+        // 지도를 클릭한 위치에 표출할 마커입니다
+        var marker = new kakao.maps.Marker({
+            // 지도 중심좌표에 마커를 생성합니다
+            position: map.getCenter()
+        });
+        // 지도에 마커를 표시합니다
+        marker.setMap(map);
+
+
+    }
+
+    // 지도에 클릭 이벤트를 등록합니다
+    // 지도를 클릭하면 마지막 파라미터로 넘어온 함수를 호출합니다
+
+
     function getFullAddress(longtitude, latitude) {
-        var AddressRequest={
-            x : longtitude,
-            y : latitude
+        var AddressRequest = {
+            x: longtitude,
+            y: latitude
         };
 
         $.ajax({
             url: "/user/api/getFullAddress",
             data: AddressRequest,
-            type:"POST",
+            type: "POST",
         }).done(function (fragment) {
             console.log(fragment);
-            $("#fullAddress").val(fragment);
+            $("#fullAddress").text(fragment);
         });
     }
 

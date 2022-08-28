@@ -9,13 +9,11 @@ import com.app.lunchsolver.util.NaverUtility;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -24,32 +22,19 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.*;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponents;
-import org.springframework.web.util.UriComponentsBuilder;
 
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.PersistenceContext;
-import javax.persistence.StoredProcedureQuery;
-import javax.swing.text.html.HTML;
-import java.lang.reflect.Type;
 import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
 
 
 @RunWith(SpringRunner.class)
@@ -283,7 +268,7 @@ class RestaurantServiceImplTest {
     @Test
     public void 좌표값을기준으로1km반경내음식점찾기() throws Exception{
         //given
-        AddressRequest request = new AddressRequest(126.9738873,37.5502692);
+        AddressDTO request = new AddressDTO(126.9738873,37.5502692);
         //when
         List<RestaurantDTOInterface> r = restaurantsRepository.getRestaurantByLocation(request.getX(), request.getY());
         //then
@@ -297,7 +282,7 @@ class RestaurantServiceImplTest {
     @DisplayName("x,y 좌표값을 받아와 위치기반 가까운 거리의 매장정보를 반환")
     public void getRestaurantDTOfromDB () throws Exception {
         // given
-        AddressRequest request = new AddressRequest(126.9738873,37.5502692);
+        AddressDTO request = new AddressDTO(126.9738873,37.5502692);
         // when
         List<RestaurantDTO> dtos = new ArrayList<RestaurantDTO>(); // 초기화진행
         List<Restaurant> restaurantList = restaurantsRepository.findAll();

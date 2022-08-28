@@ -1,6 +1,6 @@
 package com.app.lunchsolver.service;
 
-import com.app.lunchsolver.dto.AddressRequest;
+import com.app.lunchsolver.dto.AddressDTO;
 import com.app.lunchsolver.dto.GetRestaurantRequest;
 import com.app.lunchsolver.dto.RestaurantDTO;
 
@@ -13,5 +13,5 @@ public interface RestaurantService {
 
     void getRestaurantDTO();
 
-    List<RestaurantDTO> getRestaurantDTO(AddressRequest request);
+    List<RestaurantDTO> getRestaurantDTO(AddressDTO request);
 }

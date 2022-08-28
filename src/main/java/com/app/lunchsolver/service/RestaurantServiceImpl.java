@@ -1,6 +1,6 @@
 package com.app.lunchsolver.service;
 
-import com.app.lunchsolver.dto.AddressRequest;
+import com.app.lunchsolver.dto.AddressDTO;
 import com.app.lunchsolver.dto.GetRestaurantRequest;
 import com.app.lunchsolver.dto.GetRestaurantResponse;
 import com.app.lunchsolver.dto.RestaurantDTO;
@@ -124,7 +124,7 @@ public class RestaurantServiceImpl implements RestaurantService{
     }
 
     @Override
-    public List<RestaurantDTO> getRestaurantDTO(AddressRequest request) {
+    public List<RestaurantDTO> getRestaurantDTO(AddressDTO request) {
         List<RestaurantDTO> dtos = new ArrayList<RestaurantDTO>(); // 초기화진행
         List<Restaurant> restaurantList = restaurantsRepository.findAll();
         for (Restaurant restaurant : restaurantList) {
