@@ -3,6 +3,7 @@ package com.app.lunchsolver.controller;
 import com.app.lunchsolver.config.auth.LoginUser;
 import com.app.lunchsolver.dto.AddressDTO;
 import com.app.lunchsolver.dto.SessionUser;
+import com.app.lunchsolver.entity.user.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -34,17 +35,7 @@ public class IndexController {
         return "main";
     }
 
-    @PostMapping("/main")
-    public String postXY(@RequestParam double x,
-            @RequestParam double y
-            , @LoginUser SessionUser user){
-        log.info(x+""+y);
-        user.setX(x);
-        user.setY(y);
 
-        log.info(user.toString());
-        return "restaurant";
-    }
 
 //    @GetMapping("/success")
 //    public String xy(){

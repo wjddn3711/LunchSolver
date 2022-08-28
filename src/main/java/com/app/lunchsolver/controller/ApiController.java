@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.UnsupportedEncodingException;
 
 @RestController
@@ -38,7 +39,7 @@ public class ApiController {
 
     //
     @PutMapping("/getRestaurantData")
-    public void getRestaurantData(GetRestaurantRequest request){
+    public void getRestaurantData(GetRestaurantRequest request, HttpServletResponse response){
         try {
             String bounds = String.format("%s;%s;%f;%f",
                     request.getX(),

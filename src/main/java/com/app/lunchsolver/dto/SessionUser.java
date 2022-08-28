@@ -2,8 +2,10 @@ package com.app.lunchsolver.dto;
 
 
 import com.app.lunchsolver.entity.user.User;
+import com.app.lunchsolver.enums.Role;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.io.Serializable;
 

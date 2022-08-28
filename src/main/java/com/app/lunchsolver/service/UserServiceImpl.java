@@ -2,6 +2,9 @@ package com.app.lunchsolver.service;
 
 import com.app.lunchsolver.dto.AddressDTO;
 import com.app.lunchsolver.dto.KaKaoMapResponse;
+import com.app.lunchsolver.dto.SessionUser;
+import com.app.lunchsolver.entity.user.User;
+import com.app.lunchsolver.entity.user.UserRepository;
 import com.app.lunchsolver.util.BaseUtility;
 import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +29,9 @@ public class UserServiceImpl implements UserService {
     private RestTemplate restTemplate;
     @Autowired
     private BaseUtility utility;
+
+    @Autowired
+    private UserRepository userRepository;
 
     Gson gson = new Gson();
 
@@ -80,6 +86,22 @@ public class UserServiceImpl implements UserService {
         KaKaoMapResponse mapped_data = gson.fromJson(response.getBody().toString(), KaKaoMapResponse.class);
         String target = mapped_data.documents.get(0).address_name;
         return target;
+    }
+
+    @Override
+    public User saveOrUpdateXY(SessionUser sessionUser) {
+        log.info("save xy email : "+sessionUser.getEmail());
+        log.info(sessionUser.getX()+"");
+        log.info(sessionUser.getY()+"");
+
+        User user = userRepository.findByEmail(sessionUser.getEmail())
+                .map(entity -> entity.updateXY(sessionUser.getX(),
+                        sessionUser.getY()))
+                .orElse(User.userXY()
+                        .sessionUser(sessionUser)
+                        .build());
+        log.info("new User : "+user);
+        return userRepository.save(user);
     }
 
 }

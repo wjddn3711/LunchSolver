@@ -1,5 +1,6 @@
 package com.app.lunchsolver.entity.user;
 
+import com.app.lunchsolver.dto.SessionUser;
 import com.app.lunchsolver.entity.BaseTimeEntity;
 import com.app.lunchsolver.enums.Role;
 import lombok.Builder;
@@ -13,6 +14,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Table(name="users")
 @Entity
+@ToString
 public class User extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -45,23 +47,27 @@ public class User extends BaseTimeEntity {
         this.role = role;
     }
 
+    @Builder(builderMethodName = "userXY")
+    public User(SessionUser sessionUser){
+        this.name = sessionUser.getName();
+        this.email = sessionUser.getEmail();
+        this.picture = sessionUser.getPicture();
+        this.role = Role.USER;
+        this.x = sessionUser.getX();
+        this.y = sessionUser.getY();
+    }
+
     public User update(String name, String picture){
         this.name = name;
         this.picture = picture;
         return this;
     }
 
-    @Override
-    public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", email='" + email + '\'' +
-                ", picture='" + picture + '\'' +
-                ", role=" + role +
-                '}';
+    public User updateXY(Double x, Double y){
+        this.x = x;
+        this.y = y;
+        return this;
     }
-
     public String getRoleKey(){
         return this.role.getKey();
     }
