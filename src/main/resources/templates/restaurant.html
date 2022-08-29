@@ -9,38 +9,39 @@
 </head>
 <body>
 
-<h1>OAuth Test 중</h1>
+<h1>음식점 리스트</h1>
 <div class="col-md-12">
     <!--    로그인 기능 영역 -->
     <div class="row">
         <div class="col-md-6">
             <table>
-                <colgroup>
-                    <col width="6%">
-                    <col width="8%">
-                    <col width="8%">
-                    <col>
-                    <col width="8%">
-                    <col width="8%">
-                    <col width="15%">
-                    <col width="10%">
-                </colgroup>
                 <thead>
                     <tr>
-                        <th></th>
-                        <th></th>
-                        <th></th>
-                        <th></th>
-                        <th></th>
-                        <th></th>
-                        <th></th>
-                        <th></th>
+                        <th>순번</th>
+                        <th>이미지</th>
+                        <th>음식점명</th>
+                        <th>대표메뉴</th>
+                        <th>거리(m)</th>
+                        <th>주소</th>
+                        <th>영업시간</th>
+                        <th>방문자리뷰</th>
+                        <th>예약리뷰</th>
+                        <th>카테고리</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr th:each="userList : ${list}">
-                        <td th:text="${userList.name}"></td>
-                        <td th:text="${userList.age}"></td>
+                    <tr th:each="restaurantDTO, status:${restaurants}">
+                        <td th:text="${status.index}"></td>
+<!--                        <td><img id="imgId" th:src="${restaurantDTO.image_Url}" alt="첨부이미지" /></td>-->
+                        <td th:text="${restaurantDTO.image_Url}"></td>
+                        <td th:text="${restaurantDTO.name}"></td>
+                        <td th:text="${restaurantDTO.category}"></td>
+                        <td th:text="${restaurantDTO.diff_Distance}"></td>
+                        <td th:text="${restaurantDTO.address}"></td>
+                        <td th:text="${restaurantDTO.business_Hours}"></td>
+                        <td th:text="${restaurantDTO.visitor_Review_Score}"></td>
+                        <td th:text="${restaurantDTO.booking_Review_Score}"></td>
+                        <td th:text="${restaurantDTO.category}"></td>
                     </tr>
                 </tbody>
             </table>
