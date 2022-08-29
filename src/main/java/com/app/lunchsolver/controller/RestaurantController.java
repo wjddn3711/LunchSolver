@@ -51,9 +51,8 @@ public class RestaurantController {
                 .build();
         // 가까운 음식점 정보를 가져옴
         List<RestaurantDTO> datas = restaurantService.getRestaurantDTO(request);
-        for (RestaurantDTO data : datas) {
-            System.out.println(data.toString());
-        }
+        model.addAttribute("restaurants", datas);
+
         return "restaurant";
     }
 }

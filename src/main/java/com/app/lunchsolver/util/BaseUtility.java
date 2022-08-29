@@ -7,6 +7,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.nio.charset.Charset;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -19,6 +20,7 @@ public class BaseUtility {
     private final String REFERER = "https://map.naver.com/";
 
     public HttpHeaders getDefaultHeader(){
+        MediaType mediaType = new MediaType("application", "json", Charset.forName("UTF-8"));
         HttpHeaders httpHeaders = new HttpHeaders();
         MultiValueMap<String, String> headerValues = new LinkedMultiValueMap<>();
         headerValues.add(HttpHeaders.ACCEPT, "*/*");
@@ -27,7 +29,7 @@ public class BaseUtility {
         headerValues.add("Referer", REFERER);
         headerValues.add("Connection","keep-alive");
         httpHeaders.addAll(headerValues);
-        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+        httpHeaders.setContentType(mediaType);
         return httpHeaders;
     }
 

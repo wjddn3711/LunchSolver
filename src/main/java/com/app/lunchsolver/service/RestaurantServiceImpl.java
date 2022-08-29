@@ -15,12 +15,14 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import javax.transaction.Transactional;
 import java.io.UnsupportedEncodingException;
 import java.net.*;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -63,6 +65,7 @@ public class RestaurantServiceImpl implements RestaurantService{
             HttpHeaders httpHeaders = utility.getDefaultHeader();
 
             HttpEntity requestMessage = new HttpEntity(jsonOperation, httpHeaders);
+
             ResponseEntity response = restTemplate.exchange(
                     _url,
                     HttpMethod.POST,
@@ -77,13 +80,14 @@ public class RestaurantServiceImpl implements RestaurantService{
             int maxCnt = total < 100 ? total : 100;
             for (int i = 0; i < maxCnt; i++) {
                 GetRestaurantResponse mapped_data = gson.fromJson(items.get(i).toString(), GetRestaurantResponse.class);
+                log.info(mapped_data.toString());
                 //1. first map with entity : 엔티티와 매핑하기전 validation을 거친다
                 Restaurant newJoined = restaurantsRepository.findRestaurantById(mapped_data.getId())
                         .orElse(restaurantsRepository.save(Restaurant.builder()
                                                                         .id(mapped_data.getId())
                                                                         .address(mapped_data.getAddress())
                                                                         .category(mapped_data.getCategory() == null ? "없음" : mapped_data.getCategory())
-                                                                        .imageUrl(mapped_data.getImageUrl() == null ? "" : URLDecoder.decode(mapped_data.getImageUrl(), "UTF-8"))
+                                                                        .imageUrl(mapped_data.getImageUrl() == null ? "" : mapped_data.getImageUrl())
                                                                         .name(mapped_data.getName())
                                                                         .businessHours(mapped_data.getBusinessHours())
                                                                         .visitorReviewScore(mapped_data.getVisitorReviewScore() == null ? 0.0 : Double.parseDouble(mapped_data.getVisitorReviewScore()))
