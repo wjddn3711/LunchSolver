@@ -90,10 +90,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User saveOrUpdateXY(SessionUser sessionUser) {
-        log.info("save xy email : "+sessionUser.getEmail());
-        log.info(sessionUser.getX()+"");
-        log.info(sessionUser.getY()+"");
-
         User user = userRepository.findByEmail(sessionUser.getEmail())
                 .map(entity -> entity.updateXY(sessionUser.getX(),
                         sessionUser.getY()))

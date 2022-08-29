@@ -9,7 +9,7 @@ import lombok.ToString;
 @Setter
 @ToString
 public class GetRestaurantResponse {
-    private String id;
+    private long id;
     private String address;
     private String category;
     private String imageUrl;

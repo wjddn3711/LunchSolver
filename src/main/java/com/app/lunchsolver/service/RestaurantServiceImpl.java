@@ -83,7 +83,7 @@ public class RestaurantServiceImpl implements RestaurantService{
                 GetRestaurantResponse mapped_data = gson.fromJson(items.get(i).toString(), GetRestaurantResponse.class);
                 //1. first map with entity : 엔티티와 매핑하기전 validation을 거친다
                 Restaurant restaurant = Restaurant.builder()
-                        .id(Long.parseLong(mapped_data.getId()))
+                        .id(mapped_data.getId())
                         .address(mapped_data.getAddress())
                         .category(mapped_data.getCategory() == null ? "없음" : mapped_data.getCategory())
                         .imageUrl(mapped_data.getImageUrl() == null ? "" : URLDecoder.decode(mapped_data.getImageUrl(), "UTF-8"))
@@ -118,10 +118,6 @@ public class RestaurantServiceImpl implements RestaurantService{
                 String.class);
     }
 
-    @Override
-    public void getRestaurantDTO() {
-
-    }
 
     @Override
     public List<RestaurantDTO> getRestaurantDTO(AddressDTO request) {

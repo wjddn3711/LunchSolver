@@ -2,12 +2,14 @@ package com.app.lunchsolver.entity.restaurant;
 
 import com.app.lunchsolver.dto.RestaurantDTO;
 import com.app.lunchsolver.dto.RestaurantDTOInterface;
+import com.app.lunchsolver.entity.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.security.core.parameters.P;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface RestaurantsRepository extends JpaRepository<Restaurant, Long> {
     @Query(value = "select r.id from Restaurant r", nativeQuery = true)
@@ -24,4 +26,8 @@ public interface RestaurantsRepository extends JpaRepository<Restaurant, Long> {
             "R.ADDRESS " +
             "FROM RESTAURANT AS R HAVING diff_Distance <= 1000 order by diff_Distance", nativeQuery = true)
     public List<RestaurantDTOInterface> getRestaurantByLocation(@Param("x") Double x, @Param("y") Double y);
+
+    Optional<Restaurant> findRestaurantById(long id);
+
+
 }

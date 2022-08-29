@@ -11,7 +11,5 @@ public interface RestaurantService {
     void getRestaurantData(GetRestaurantRequest request) throws UnsupportedEncodingException;
     void getRestaurantDetail(String url);
 
-    void getRestaurantDTO();
-
     List<RestaurantDTO> getRestaurantDTO(AddressDTO request);
 }

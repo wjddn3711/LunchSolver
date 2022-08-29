@@ -40,6 +40,8 @@ public class UserController {
         User newUser = userService.saveOrUpdateXY(user);
         httpSession.setAttribute("user", new SessionUser(newUser));
 
-        return "restaurant";
+        return "redirect:/restaurant/addNearest";
     }
+
+
 }
