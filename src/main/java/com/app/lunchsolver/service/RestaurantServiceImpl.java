@@ -1,9 +1,6 @@
 package com.app.lunchsolver.service;
 
-import com.app.lunchsolver.dto.AddressDTO;
-import com.app.lunchsolver.dto.GetRestaurantRequest;
-import com.app.lunchsolver.dto.GetRestaurantResponse;
-import com.app.lunchsolver.dto.RestaurantDTO;
+import com.app.lunchsolver.dto.*;
 import com.app.lunchsolver.entity.restaurant.Restaurant;
 import com.app.lunchsolver.entity.restaurant.RestaurantsRepository;
 import com.app.lunchsolver.enums.RestaurantType;
@@ -71,7 +68,6 @@ public class RestaurantServiceImpl implements RestaurantService{
                     HttpMethod.POST,
                     requestMessage,
                     String.class);
-            List<Restaurant> entities = new ArrayList<>();
 
             JSONArray datas = new JSONArray(response.getBody().toString());
             datas.getJSONObject(0);
@@ -82,25 +78,23 @@ public class RestaurantServiceImpl implements RestaurantService{
             for (int i = 0; i < maxCnt; i++) {
                 GetRestaurantResponse mapped_data = gson.fromJson(items.get(i).toString(), GetRestaurantResponse.class);
                 //1. first map with entity : 엔티티와 매핑하기전 validation을 거친다
-                Restaurant restaurant = Restaurant.builder()
-                        .id(mapped_data.getId())
-                        .address(mapped_data.getAddress())
-                        .category(mapped_data.getCategory() == null ? "없음" : mapped_data.getCategory())
-                        .imageUrl(mapped_data.getImageUrl() == null ? "" : URLDecoder.decode(mapped_data.getImageUrl(), "UTF-8"))
-                        .name(mapped_data.getName())
-//                        .distance(utility.stringToLongDistance(mapped_data.getDistance()))
-                        .businessHours(mapped_data.getBusinessHours())
-                        .visitorReviewScore(mapped_data.getVisitorReviewScore() == null ? 0.0 : Double.parseDouble(mapped_data.getVisitorReviewScore()))
-                        .saveCount(utility.stringToLongSaveCnt(mapped_data.getSaveCount()))
-                        .bookingReviewScore(mapped_data.getBookingReviewScore())
-                        .restaurantType(type)
-                        .x(mapped_data.getX())
-                        .y(mapped_data.getY())
-                        .build();
-                entities.add(restaurant);
+                Restaurant newJoined = restaurantsRepository.findRestaurantById(mapped_data.getId())
+                        .orElse(restaurantsRepository.save(Restaurant.builder()
+                                                                        .id(mapped_data.getId())
+                                                                        .address(mapped_data.getAddress())
+                                                                        .category(mapped_data.getCategory() == null ? "없음" : mapped_data.getCategory())
+                                                                        .imageUrl(mapped_data.getImageUrl() == null ? "" : URLDecoder.decode(mapped_data.getImageUrl(), "UTF-8"))
+                                                                        .name(mapped_data.getName())
+                                                                        .businessHours(mapped_data.getBusinessHours())
+                                                                        .visitorReviewScore(mapped_data.getVisitorReviewScore() == null ? 0.0 : Double.parseDouble(mapped_data.getVisitorReviewScore()))
+                                                                        .saveCount(utility.stringToLongSaveCnt(mapped_data.getSaveCount()))
+                                                                        .bookingReviewScore(mapped_data.getBookingReviewScore())
+                                                                        .restaurantType(type)
+                                                                        .x(mapped_data.getX())
+                                                                        .y(mapped_data.getY())
+                                                                        .build()));
             }
             log.info("saving in service succeed");
-            restaurantsRepository.saveAll(entities);
         }
     }
 
@@ -121,12 +115,10 @@ public class RestaurantServiceImpl implements RestaurantService{
 
     @Override
     public List<RestaurantDTO> getRestaurantDTO(AddressDTO request) {
-        List<RestaurantDTO> dtos = new ArrayList<RestaurantDTO>(); // 초기화진행
-        List<Restaurant> restaurantList = restaurantsRepository.findAll();
-        for (Restaurant restaurant : restaurantList) {
-            // repository 의 db값 -> response dto 로 변환 (거리 계산을 해야하기 때문에 엔티티 그대로 모델로 사용하지못함)
-
-        }
+        // Point 간의 거리를 통하여 가까운 음식점 정보를 db 에서 매칭
+        List<RestaurantDTOInterface> interfaces = restaurantsRepository.getRestaurantByLocation(request.getX(), request.getY());
+        // interface -> dto 로
+        List<RestaurantDTO> dtos = RestaurantDTO.interfaceToDto(interfaces);
         return dtos;
     }
 }

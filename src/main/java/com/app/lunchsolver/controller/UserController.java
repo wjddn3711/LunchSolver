@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -32,9 +33,7 @@ public class UserController {
     @PostMapping("/postXY")
     public String postXY(AddressDTO dto
             , @LoginUser SessionUser user){
-        log.info("inside postXY");
-        log.info(user.getEmail());
-        log.info(user.getName());
+
         user.setX(dto.getX());
         user.setY(dto.getY());
         User newUser = userService.saveOrUpdateXY(user);
