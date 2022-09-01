@@ -93,9 +93,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findByEmail(sessionUser.getEmail())
                 .map(entity -> entity.updateXY(sessionUser.getX(),
                         sessionUser.getY()))
-                .orElse(User.userXY()
-                        .sessionUser(sessionUser)
-                        .build());
+                .orElse(User.userXY().build());
         log.info("new User : "+user);
         return userRepository.save(user);
     }

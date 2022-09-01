@@ -23,7 +23,7 @@ public class ApiController {
     private RestaurantService restaurantService;
 
     // 위경도를 통해 주소 반환
-    @PostMapping("/getFullAddress")
+    @GetMapping("/search/reverse-geo")
     public String getFullAddress(AddressDTO request){
         String result = userService.getAddress(request.getX(), request.getY());
         log.info(request.toString());
@@ -31,26 +31,26 @@ public class ApiController {
     }
 
     // 주소를 통해 위경도 반환
-    @PostMapping("/getLonLat")
+    @GetMapping("/search/geo")
     public AddressDTO getLonLat(@RequestParam(value ="fullAddress") String fullAddress){
         log.info("full address : "+fullAddress);
         return userService.getXY(fullAddress);
     }
 
-    //
-    @PutMapping("/getRestaurantData")
-    public void getRestaurantData(GetRestaurantRequest request, HttpServletResponse response){
-        try {
-            String bounds = String.format("%s;%s;%f;%f",
-                    request.getX(),
-                    request.getY(),
-                    Double.parseDouble(request.getX())+0.0241399,
-                    Double.parseDouble(request.getY())+0.0193742);
-            log.info("bounds : "+bounds);
-            request.setBounds(bounds);
-            restaurantService.getRestaurantData(request);
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
-    }
+//    // deprecated
+//    @PutMapping("/getRestaurantData")
+//    public void getRestaurantData(GetRestaurantRequest request, HttpServletResponse response){
+//        try {
+//            String bounds = String.format("%s;%s;%f;%f",
+//                    request.getX(),
+//                    request.getY(),
+//                    Double.parseDouble(request.getX())+0.0241399,
+//                    Double.parseDouble(request.getY())+0.0193742);
+//            log.info("bounds : "+bounds);
+//            request.setBounds(bounds);
+//            restaurantService.getRestaurantData(request);
+//        } catch (UnsupportedEncodingException e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
 }

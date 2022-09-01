@@ -19,6 +19,14 @@ public class BaseUtility {
     private final String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36";
     private final String REFERER = "https://map.naver.com/";
 
+    public String getBoundary(double x, double y){
+        return String.format("%s;%s;%f;%f",
+                x,
+                y,
+                x+0.0241399,
+                y+0.0193742);
+    }
+
     public HttpHeaders getDefaultHeader(){
         MediaType mediaType = new MediaType("application", "json", Charset.forName("UTF-8"));
         HttpHeaders httpHeaders = new HttpHeaders();

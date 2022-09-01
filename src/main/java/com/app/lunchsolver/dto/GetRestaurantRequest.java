@@ -14,8 +14,9 @@ public class GetRestaurantRequest {
     private String x;
     private String y;
     private String bounds;
-
     private RestaurantType type;
+
+
     @Builder
     public GetRestaurantRequest(String query, String x, String y, String bounds,RestaurantType type) {
         this.query = query;

@@ -9,7 +9,8 @@
     <title>Main</title>
 </head>
 <body>
-<form th:action="@{/user/postXY}"  method="post">
+<form th:action="@{/user/lon-lat}"  method="POST">
+    <input type="hidden" name="_method" value="PUT">
     위도
     <input type="text"  id="x" name="x" readonly/>
     <br>
@@ -38,9 +39,9 @@
             // 만약 주소값이 입력되었다면 ajax호출
 
             $.ajax({
-                url: "/user/api/getLonLat",
+                url: "/user/api/search/geo",
                 data: {fullAddress : address},
-                type: "POST",
+                type: "GET",
             }).done(function (fragment) {
 
                 console.log('x: '+fragment.x);
@@ -163,9 +164,9 @@
         };
 
         $.ajax({
-            url: "/user/api/getFullAddress",
+            url: "/user/api/search/reverse-geo",
             data: AddressRequest,
-            type: "POST",
+            type: "GET",
         }).done(function (fragment) {
             console.log(fragment);
             $("#fullAddress").text(fragment);
