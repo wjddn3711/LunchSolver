@@ -131,7 +131,7 @@ class RestaurantServiceImplTest {
 
     @Test
     @DisplayName("카테고리별 100개 스크래핑하여 DB에 담기")
-    @BeforeEach
+//    @BeforeEach
     public void getRestaurantData_v2 () throws Exception {
 
         for (RestaurantType type : RestaurantType.values()) {
@@ -255,7 +255,6 @@ class RestaurantServiceImplTest {
             for (String s : restaurantList) {
                 // 해당 JObject와 Response 객체간의 매핑
                 RestaurantDetailResponse mapped_data = gson.fromJson(target.get(s).toString(), RestaurantDetailResponse.class);
-                mapped_data.setImgUrl(String.valueOf(mapped_data.getImages().get("json")));
                 results.add(mapped_data);
             }
         }

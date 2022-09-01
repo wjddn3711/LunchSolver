@@ -13,6 +13,8 @@ public class RestaurantDetailResponse {
 
     private String name;
     private String price;
-    private JsonObject images;
-    private String imgUrl;
+    private String[] images;
+    private String description;
+    private String id;
+    private int priority;
 }
