@@ -1,26 +1,20 @@
 package com.app.lunchsolver.entity.restaurant;
 
 import com.app.lunchsolver.dto.RestaurantDTO;
+import com.app.lunchsolver.entity.BaseTimeEntity;
+import com.app.lunchsolver.entity.menu.Menu;
 import com.app.lunchsolver.enums.RestaurantType;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
-@NamedStoredProcedureQuery(
-        name = "getClosestRestaurant", //쿼리 이름
-        procedureName = "RST_CLOSEST_R1", //데이터베이스의 저장 프로시저명
-        resultClasses = RestaurantDTO.class, // 저장 프로시저 호출에 의해 반환된 결과 클래스 정의
-        parameters = { //저장 프로시저의 매개변수와 일치하는 매개변수 목록
-                @StoredProcedureParameter(mode = ParameterMode.IN, type = Double.class, name = "x"),
-                @StoredProcedureParameter(mode = ParameterMode.IN, type = Double.class, name = "y")
-        }
-)
 
 @Entity
 @Getter
-@ToString
 @NoArgsConstructor
-public class Restaurant {
+public class Restaurant extends BaseTimeEntity {
 
     // pk
     @Id
@@ -63,6 +57,13 @@ public class Restaurant {
 
     @Column(nullable = false)
     private Double y;
+
+    @OneToMany(mappedBy = "restaurant")
+    private List<Menu> menus = new ArrayList<>();
+
+    public void newMenu(Menu menu){
+        this.menus.add(menu);
+    }
 
     @Builder
     public Restaurant(long id, String address, String category, String imageUrl, String name, String businessHours, Double visitorReviewScore, Long saveCount, Double bookingReviewScore, RestaurantType restaurantType, Double x, Double y) {

@@ -257,6 +257,10 @@ class RestaurantServiceImplTest {
                 RestaurantDetailResponse mapped_data = gson.fromJson(target.get(s).toString(), RestaurantDetailResponse.class);
                 results.add(mapped_data);
             }
+
+            for (RestaurantDetailResponse result : results) {
+                log.info(result.toString());
+            }
         }
         // when
 
