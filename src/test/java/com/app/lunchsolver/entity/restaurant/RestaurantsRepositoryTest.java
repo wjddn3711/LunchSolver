@@ -2,12 +2,19 @@ package com.app.lunchsolver.entity.restaurant;
 
 import com.app.lunchsolver.dto.GetRestaurantRequest;
 import com.app.lunchsolver.dto.GetRestaurantResponse;
+import com.app.lunchsolver.dto.RestaurantDetailResponse;
+import com.app.lunchsolver.entity.menu.Menu;
+import com.app.lunchsolver.entity.menu.MenuRepository;
 import com.app.lunchsolver.enums.RestaurantType;
 import com.app.lunchsolver.util.BaseUtility;
 import com.app.lunchsolver.util.NaverUtility;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import org.json.JSONArray;
+import org.json.JSONObject;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -26,16 +33,22 @@ import org.springframework.web.client.RestTemplate;
 
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.InstanceOfAssertFactories.map;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
 class RestaurantsRepositoryTest {
     @Autowired
     RestaurantsRepository restaurantsRepository;
+
+    @Autowired
+    MenuRepository menuRepository;
+
 
     @Autowired
     private RestTemplate restTemplate;
@@ -52,7 +65,7 @@ class RestaurantsRepositoryTest {
     private final String x =  "126.9858499";
     private final String y =  "37.560042";
     private final String bounds = "126.9738873;37.5502692;126.9980272;37.5696434";
-
+    private final String HOST_v1 = "https://pcmap.place.naver.com";
     Gson gson = new Gson();
 
 
@@ -69,6 +82,8 @@ class RestaurantsRepositoryTest {
     @DisplayName("카테고리별 음식점 모두 스크래핑후 보내기")
     @BeforeEach
     public void getRestaurantData_v2 () throws Exception {
+        List<Long> idList = new ArrayList<>();
+        List<Restaurant> entities = new ArrayList<>();
 
         for (RestaurantType type : RestaurantType.values()) {
             // 카테고리내의 모든 음식들을 크롤링
@@ -90,17 +105,19 @@ class RestaurantsRepositoryTest {
                     HttpMethod.POST,
                     requestMessage,
                     String.class);
-            List<Restaurant> entities = new ArrayList<>();
 
             JSONArray datas = new JSONArray(response.getBody().toString());
             datas.getJSONObject(0);
 
             JSONArray items = datas.getJSONObject(0).getJSONObject("data").getJSONObject("restaurants").getJSONArray("items");
             int total = Integer.parseInt(datas.getJSONObject(0).getJSONObject("data").getJSONObject("restaurants").get("total").toString());
-            int maxCnt = total < 100 ? total : 100;
+            int maxCnt = total < 30 ? total : 30;
+
+
             for (int i = 0; i < maxCnt; i++) {
                 GetRestaurantResponse mapped_data = gson.fromJson(items.get(i).toString(), GetRestaurantResponse.class);
                 //1. first map with entity : 엔티티와 매핑하기전 validation을 거친다
+                idList.add(mapped_data.getId()); // idList 에 id 값을 넣는다
                 Restaurant restaurant = Restaurant.builder()
                         .id(mapped_data.getId())
                         .address(mapped_data.getAddress())
@@ -120,6 +137,74 @@ class RestaurantsRepositoryTest {
             }
             restaurantsRepository.saveAll(entities);
         }
+        // 아래에서 메뉴 save
+        List<Menu> menus = new ArrayList<>();
+         for (Restaurant entity : entities) {
+            long id = entity.getId();
+            String url = String.format("/restaurant/%d/menu/list",id);
+            String _url = HOST_v1+url;
+
+            HttpHeaders httpHeaders = utility.getDefaultHeader();
+
+            HttpEntity requestMessage = new HttpEntity(httpHeaders);
+             ResponseEntity response = null;
+            // when
+             try{
+                 response = restTemplate.exchange(
+                         _url,
+                         HttpMethod.GET,
+                         requestMessage,
+                         String.class);
+             }
+            catch (Exception e){
+                 // 무시
+                continue;
+            }
+
+            // 음식점 정보들 파싱
+            Document doc = Jsoup.parse((String) response.getBody());
+
+            Element scriptElement = doc.getElementsByTag("script").get(2);
+            String innerJson =  scriptElement.childNode(0).toString();
+            int start = innerJson.indexOf("window.__APOLLO_STATE__");
+            int end = innerJson.indexOf("window.__PLACE_STATE__");
+            // JSON으로 파싱
+            JSONObject target = new JSONObject(innerJson.substring(start,end).substring(25));
+
+            JSONArray jsonArray = target.names();
+            List<String> restaurantList = new ArrayList<>();
+            for (int i = 0; i < jsonArray.length(); i++) {
+                String possible = jsonArray.get(i).toString();
+                // 레스토랑 정보를 갖고 있는 곳은 RestaurantListSummary:XXXXXX 의 형태를 띄며 한번의 스크래핑에서 50개의 결과값이 나오게 된다
+                if(possible.contains("Menu")){
+                    restaurantList.add(possible);
+                }
+            }
+//
+            List<RestaurantDetailResponse> results = new ArrayList<RestaurantDetailResponse>();
+            for (String s : restaurantList) {
+                // 해당 JObject와 Response 객체간의 매핑
+                RestaurantDetailResponse mapped_data = gson.fromJson(target.get(s).toString(), RestaurantDetailResponse.class);
+                Menu data = Menu.builder()
+                                .id(mapped_data.getId())
+                                        .restaurant(entity)
+                                                .description(mapped_data.getDescription())
+                                                        .name(mapped_data.getName())
+                                                                        .priority(mapped_data.getPriority())
+                                                                                .build();
+
+                menuRepository.save(data);
+                results.add(mapped_data);
+            }
+
+            for (RestaurantDetailResponse result : results) {
+                log.info(result.toString());
+            }
+        }
+        // when
+
+        // then
+
 
     }
 

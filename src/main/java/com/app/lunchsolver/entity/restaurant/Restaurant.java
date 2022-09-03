@@ -58,7 +58,8 @@ public class Restaurant extends BaseTimeEntity {
     @Column(nullable = false)
     private Double y;
 
-    @OneToMany(mappedBy = "restaurant")
+    @OneToMany(mappedBy = "restaurant",orphanRemoval = true
+    ,fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Menu> menus = new ArrayList<>();
 
     public void newMenu(Menu menu){
