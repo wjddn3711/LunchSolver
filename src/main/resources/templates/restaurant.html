@@ -18,7 +18,8 @@
                 <thead>
                     <tr>
                         <th>순번</th>
-                        <th>이미지</th>
+                        <th>상세보기</th>
+<!--                        <th>이미지</th>-->
                         <th>음식점명</th>
                         <th>대표메뉴</th>
                         <th>거리(m)</th>
@@ -33,7 +34,8 @@
                     <tr th:each="restaurantDTO, status:${restaurants}">
                         <td th:text="${status.index}"></td>
 <!--                        <td><img id="imgId" th:src="${restaurantDTO.image_Url}" alt="첨부이미지" /></td>-->
-                        <td th:text="${restaurantDTO.image_Url}"></td>
+                        <td><a th:href="@{/restaurant/{id} (id = ${restaurantDTO.id})}">글 상세보기</a></td>
+<!--                        <td th:text="${restaurantDTO.image_Url}"></td>-->
                         <td th:text="${restaurantDTO.name}"></td>
                         <td th:text="${restaurantDTO.category}"></td>
                         <td th:text="${restaurantDTO.diff_Distance}"></td>

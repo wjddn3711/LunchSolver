@@ -35,13 +35,17 @@ public class Menu {
     @Column(name = "images")
     private List<String> images;
 
+    @Column(nullable = false)
+    private int price;
+
     @Builder
-    public Menu(String id, Restaurant restaurant, String name, String description, int priority, List<String> images) {
+    public Menu(String id, Restaurant restaurant, String name, String description, int priority, List<String> images, int price) {
         this.id = id;
         this.restaurant = restaurant;
         this.name = name;
         this.description = description;
         this.priority = priority;
         this.images = images;
+        this.price = price;
     }
 }

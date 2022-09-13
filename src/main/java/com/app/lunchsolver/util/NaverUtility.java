@@ -10,7 +10,6 @@ import java.util.List;
 @Component
 public class NaverUtility {
 
-
     public String getRestaurants(GetRestaurantRequest request){
         String query = request.getQuery();
         String x = request.getX();

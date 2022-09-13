@@ -131,7 +131,7 @@ class RestaurantServiceImplTest {
 
     @Test
     @DisplayName("카테고리별 100개 스크래핑하여 DB에 담기")
-//    @BeforeEach
+    @BeforeEach
     public void getRestaurantData_v2 () throws Exception {
 
         for (RestaurantType type : RestaurantType.values()) {
@@ -251,14 +251,14 @@ class RestaurantServiceImplTest {
                 }
             }
 //
-            List<RestaurantDetailResponse> results = new ArrayList<RestaurantDetailResponse>();
+            List<MenuDTO> results = new ArrayList<MenuDTO>();
             for (String s : restaurantList) {
                 // 해당 JObject와 Response 객체간의 매핑
-                RestaurantDetailResponse mapped_data = gson.fromJson(target.get(s).toString(), RestaurantDetailResponse.class);
+                MenuDTO mapped_data = gson.fromJson(target.get(s).toString(), MenuDTO.class);
                 results.add(mapped_data);
             }
 
-            for (RestaurantDetailResponse result : results) {
+            for (MenuDTO result : results) {
                 log.info(result.toString());
             }
         }
@@ -268,18 +268,18 @@ class RestaurantServiceImplTest {
 
     }
 
-    @Test
-    public void 좌표값을기준으로1km반경내음식점찾기() throws Exception{
-        //given
-        AddressDTO request = new AddressDTO(126.9738873,37.5502692);
-        //when
-        List<RestaurantDTOInterface> r = restaurantsRepository.getRestaurantByLocation(request.getX(), request.getY());
-        //then
-        for (RestaurantDTOInterface restaurantDTOInterface : r) {
-            log.info(restaurantDTOInterface.getName());
-            log.info(restaurantDTOInterface.getDiff_Distance()+"");
-        }
-    }
+//    @Test
+//    public void 좌표값을기준으로1km반경내음식점찾기() throws Exception{
+//        //given
+//        AddressDTO request = new AddressDTO(126.9738873,37.5502692);
+//        //when
+//        List<RestaurantDTOInterface> r = restaurantsRepository.getRestaurantByLocation(request.getX(), request.getY());
+//        //then
+//        for (RestaurantDTOInterface restaurantDTOInterface : r) {
+//            log.info(restaurantDTOInterface.getName());
+//            log.info(restaurantDTOInterface.getDiff_Distance()+"");
+//        }
+//    }
 
     @Test
     @DisplayName("x,y 좌표값을 받아와 위치기반 가까운 거리의 매장정보를 반환")

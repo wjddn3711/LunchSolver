@@ -2,7 +2,7 @@ package com.app.lunchsolver.entity.restaurant;
 
 import com.app.lunchsolver.dto.GetRestaurantRequest;
 import com.app.lunchsolver.dto.GetRestaurantResponse;
-import com.app.lunchsolver.dto.RestaurantDetailResponse;
+import com.app.lunchsolver.dto.MenuDTO;
 import com.app.lunchsolver.entity.menu.Menu;
 import com.app.lunchsolver.entity.menu.MenuRepository;
 import com.app.lunchsolver.enums.RestaurantType;
@@ -15,7 +15,6 @@ import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -33,12 +32,10 @@ import org.springframework.web.client.RestTemplate;
 
 import java.net.URLDecoder;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.InstanceOfAssertFactories.map;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -181,10 +178,10 @@ class RestaurantsRepositoryTest {
                 }
             }
 //
-            List<RestaurantDetailResponse> results = new ArrayList<RestaurantDetailResponse>();
+            List<MenuDTO> results = new ArrayList<MenuDTO>();
             for (String s : restaurantList) {
                 // 해당 JObject와 Response 객체간의 매핑
-                RestaurantDetailResponse mapped_data = gson.fromJson(target.get(s).toString(), RestaurantDetailResponse.class);
+                MenuDTO mapped_data = gson.fromJson(target.get(s).toString(), MenuDTO.class);
                 Menu data = Menu.builder()
                                 .id(mapped_data.getId())
                                         .restaurant(entity)
@@ -197,7 +194,7 @@ class RestaurantsRepositoryTest {
                 results.add(mapped_data);
             }
 
-            for (RestaurantDetailResponse result : results) {
+            for (MenuDTO result : results) {
                 log.info(result.toString());
             }
         }

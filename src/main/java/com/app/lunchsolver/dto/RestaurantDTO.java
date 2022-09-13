@@ -5,10 +5,13 @@ import com.app.lunchsolver.entity.user.User;
 import com.app.lunchsolver.enums.RestaurantType;
 import com.app.lunchsolver.enums.Role;
 import lombok.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 @Data
 public class RestaurantDTO implements RestaurantDTOInterface {
@@ -56,25 +59,28 @@ public class RestaurantDTO implements RestaurantDTOInterface {
         this.y = y;
     }
 
-    public static List<RestaurantDTO> interfaceToDto(List<RestaurantDTOInterface> dtoInterfaces){
-        List<RestaurantDTO> dtos = new ArrayList<>();
-        for (RestaurantDTOInterface dtoInterface : dtoInterfaces) {
-            dtos.add(RestaurantDTO.builder()
-                    .x(dtoInterface.getX())
-                    .y(dtoInterface.getY())
-                    .name(dtoInterface.getName())
-                    .id(dtoInterface.getId())
-                    .address(dtoInterface.getAddress())
-                    .category(dtoInterface.getCategory())
-                    .image_Url(dtoInterface.getImage_Url())
-                    .diff_Distance(dtoInterface.getDiff_Distance())
-                    .business_Hours(dtoInterface.getBusiness_Hours())
-                    .visitor_Review_Score(dtoInterface.getVisitor_Review_Score())
-                    .save_Count(dtoInterface.getSave_Count())
-                    .booking_Review_Score(dtoInterface.getBooking_Review_Score())
-                    .restaurant_Type(dtoInterface.getRestaurant_Type())
-                    .build());
-        }
+    public static Page<RestaurantDTO> interfaceToDto(Page<RestaurantDTOInterface> dtoInterfaces){
+
+        Page<RestaurantDTO> dtos = dtoInterfaces.map(new Function<RestaurantDTOInterface, RestaurantDTO>() {
+            @Override
+            public RestaurantDTO apply(RestaurantDTOInterface dtoInterface) {
+                return RestaurantDTO.builder()
+                        .x(dtoInterface.getX())
+                        .y(dtoInterface.getY())
+                        .name(dtoInterface.getName())
+                        .id(dtoInterface.getId())
+                        .address(dtoInterface.getAddress())
+                        .category(dtoInterface.getCategory())
+                        .image_Url(dtoInterface.getImage_Url())
+                        .diff_Distance(dtoInterface.getDiff_Distance())
+                        .business_Hours(dtoInterface.getBusiness_Hours())
+                        .visitor_Review_Score(dtoInterface.getVisitor_Review_Score())
+                        .save_Count(dtoInterface.getSave_Count())
+                        .booking_Review_Score(dtoInterface.getBooking_Review_Score())
+                        .restaurant_Type(dtoInterface.getRestaurant_Type())
+                        .build();
+            }
+        });
         return dtos;
     }
 }

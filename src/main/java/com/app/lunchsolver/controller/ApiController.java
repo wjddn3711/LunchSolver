@@ -19,8 +19,6 @@ public class ApiController {
     @Autowired
     private UserService userService;
 
-    @Autowired
-    private RestaurantService restaurantService;
 
     // 위경도를 통해 주소 반환
     @GetMapping("/search/reverse-geo")

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <!--    <meta id="_csrf" name="_csrf" th:content="${_csrf.token}"/>-->
+    <!--    <meta id="_csrf_header" name="_csrf_header" th:content="${_csrf.headerName}"/>-->
+    <title>Title</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<body>
+<h1>메뉴 리스트</h1>
+<div class="col-md-12">
+    <!--    로그인 기능 영역 -->
+    <div class="row">
+        <div class="col-md-6">
+            <table>
+                <thead>
+                <tr>
+                    <th>메뉴명</th>
+                    <th>가격</th>
+<!--                    <th>이미지</th>-->
+                    <th>설명</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="menuDTO, status:${menus}">
+                    <td th:text="${status.index}"></td>
+                    <!--                        <td><img id="imgId" th:src="${restaurantDTO.image_Url}" alt="첨부이미지" /></td>-->
+                    <td th:text="${menuDTO.name}"></td>
+                    <td th:text="${menuDTO.price}"></td>
+<!--                    <td th:text="${MenuResponseDto.images}"></td>-->
+                    <td th:text="${menuDTO.description}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+</html>
