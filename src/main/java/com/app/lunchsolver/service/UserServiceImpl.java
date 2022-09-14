@@ -95,7 +95,7 @@ public class UserServiceImpl implements UserService {
                         sessionUser.getY()))
                 .orElse(User.userXY().build());
         log.info("new User : "+user);
-        return userRepository.save(user);
+            return userRepository.save(user);
     }
 
 }

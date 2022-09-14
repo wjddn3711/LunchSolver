@@ -201,6 +201,9 @@ public class RestaurantServiceImpl implements RestaurantService{
         for (String s : restaurantList) {
             // 해당 JObject와 Response 객체간의 매핑
             MenuDTO mapped_data = gson.fromJson(target.get(s).toString(), MenuDTO.class);
+            // 몇몇 음식점은 OTHERS 라고 따로 null 값을 가진 메뉴가 존재 이 경우 저장하지 않음
+            if (mapped_data.getPrice() == null
+                || mapped_data.getImages() == null) continue;
             Menu data = Menu.builder()
                     .id(mapped_data.getId())
                     .images(Arrays.asList(mapped_data.getImages()))

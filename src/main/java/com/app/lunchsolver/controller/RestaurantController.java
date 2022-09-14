@@ -54,7 +54,8 @@ public class RestaurantController {
                 .build();
         // 가까운 음식점 정보를 가져옴
         Page<RestaurantDTO> datas = restaurantService.getRestaurantDTO(request, pageable);
-        model   .addAttribute("restaurants", datas);
+        
+        model.addAttribute("restaurants", datas);
 
         return "restaurant";
     }

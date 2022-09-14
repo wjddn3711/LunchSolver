@@ -11,7 +11,7 @@ import lombok.ToString;
 public class MenuDTO {
 
     private String name;
-    private int price;
+    private String price;
     private String[] images;
     private String description;
     private String id;

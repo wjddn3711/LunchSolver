@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 import org.hibernate.annotations.TypeDefs;
+import org.springframework.data.domain.Sort;
 
 import javax.persistence.*;
 import java.util.List;
@@ -36,10 +37,10 @@ public class Menu {
     private List<String> images;
 
     @Column(nullable = false)
-    private int price;
+    private String price;
 
     @Builder
-    public Menu(String id, Restaurant restaurant, String name, String description, int priority, List<String> images, int price) {
+    public Menu(String id, Restaurant restaurant, String name, String description, int priority, List<String> images, String price) {
         this.id = id;
         this.restaurant = restaurant;
         this.name = name;
