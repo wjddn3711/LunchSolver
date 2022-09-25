@@ -43,7 +43,7 @@
 ## ⌨️ 관련 포스팅 일지
 <div align="center" style="text-align:center">
 
-  [![Velog's GitHub stats](https://velog-readme-stats.vercel.app/api?name=wjddn3711&color=dark)](https://velog.io/@wjddn3711/%EB%82%98%EC%9D%98-%EC%A3%BC%EB%B3%80-%EB%A7%9B%EC%A7%91%EB%93%A4%EC%9D%84-%EA%B0%84%ED%8E%B8%ED%95%98%EA%B2%8C-%EC%95%8C%EC%95%84%EB%B3%B4%EC%9E%901)
+  [![Velog's GitHub stats](https://velog-readme-stats.vercel.app/api?name=wjddn3711&color=dark)](https://velog.io/@wjddn3711/series/SpringBoot-ToyProject)
   
 </div>
 
